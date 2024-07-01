@@ -249,15 +249,14 @@ declare function createImage(name: string): HTMLImageElement;`;
     console.log(`Images updated and saved to ${outputTsFile}`);
 }
 
-function runTypeScriptCompile(folderPath, watch = true) {
+function runTypeScriptCompile(folderPath) {
     const { spawn } = require('child_process');
     const args = ['--project', folderPath];
-    if (watch) args.push('--watch');
     const tscProcess = spawn('tsc', args, {
         stdio: 'inherit',
         shell: true,
     });
-    console.log(`tsc process (watch=${watch}) started for folder ${folderPath}`);
+    console.log(`tsc process started for folder ${folderPath}`);
     return new Promise<boolean>((resolve, reject) => {
         tscProcess.on('close', (code) => {
             console.log(`tsc process exited with code ${code} for folder ${folderPath}`);

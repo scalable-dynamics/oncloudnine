@@ -1,4 +1,3 @@
-const WATCH = process.argv.includes('--watch');
 const RELEASE = process.argv.includes('--release');
 let MAIN = 'undefined';
 if (process.argv.includes('--main')) {
@@ -24,7 +23,7 @@ if (process.argv.includes('--config')) {
 function buildSharedFolders(tsSharedFolder, sharedBuildFolder, publicFolder, publicBuildFolder, imagesFolder, imagesJsFile, imagesTsFile, typesFolder, ...targetFolders: string[]) {
     const fs = require('fs');
     const path = require('path');
-    return runTypeScriptCompile(tsSharedFolder, false).then(success => {
+    return runTypeScriptCompile(tsSharedFolder).then(success => {
         if (!success) {
             console.error('TypeScript compilation failed for shared project.');
             return;
@@ -113,10 +112,8 @@ function execute() {
 
     const tsBuildTasks = [
         buildSharedFolders(tsSharedFolder, sharedBuildFolder, publicFolder, publicBuildFolder, imagesFolder, imagesJsFile, imagesTsFile, typesFolder, ...tsAppFolders),
-        ...tsBuildFolders.map(folder => runTypeScriptCompile(folder, WATCH))
+        ...tsBuildFolders.map(folder => runTypeScriptCompile(folder))
     ];
-
-    if (WATCH) return [];
 
     let watchers: { close() }[] = [];
 
@@ -137,7 +134,7 @@ function execute() {
             ...jsBuildFolders.map(([folder, outputFile]) => createWatcher(folder, () => combineAndSaveJs(folder, outputFile, outputFile === jsOutputFile ? MAIN : undefined))),
             ...tsBuildFolders.map(folder => createWatcher(folder, (file) => {
                 if (file.endsWith('.ts') || file.endsWith('.tsx')) {
-                    runTypeScriptCompile(folder, false);
+                    runTypeScriptCompile(folder);
                 } else if (file.endsWith('.css')) {
                     combineAndSaveCss(tsBuildFolders, cssOutputFile);
                 }
