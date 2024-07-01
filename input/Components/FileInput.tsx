@@ -1,6 +1,4 @@
-﻿import { ShowTooltip } from "./Tooltip.js";
-
-declare var $Images: any;
+﻿declare var $Images: any;
 
 interface FileInputProps extends JSX.Component<HTMLElement> {
     fileProcessor?: IFileProcessor | undefined;

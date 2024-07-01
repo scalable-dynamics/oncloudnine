@@ -1,6 +1,4 @@
-﻿import { ShowTooltip } from "./Tooltip";
-
-type TextInputElement = HTMLElement & { value?: string };
+﻿type TextInputElement = HTMLElement & { value?: string };
 
 interface TextInputProps extends JSX.Component<TextInputElement> {
     onValueChanged: (value: string) => void;

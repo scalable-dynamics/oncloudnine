@@ -18,13 +18,6 @@ interface IObservableList<T> {
     array: T[];
 }
 
-type FileContent = (string | any[] | { image: string });
-
-interface IFileProcessor {
-    supportedFileTypes: string[];
-    readFile(file: Blob): Promise<FileContent>;
-}
-
 interface IFileStore extends AsyncIterable<string> {
     clear(): Promise<void>;
     has(name: string): Promise<boolean>;
@@ -37,10 +30,4 @@ interface IFileStore extends AsyncIterable<string> {
 interface IMarkdownOutput {
     removeMarkdown(text: string): string;
     renderMarkdown(text: string): HTMLElement;
-}
-
-interface ICache {
-    get(key: string): any;
-    set(key: string, value: any, expiry?: number): void;
-    clear(): void;
 }
