@@ -1,0 +1,126 @@
+.file-icon {
+    display: inline-block;
+    cursor: pointer;
+    position: relative;
+    width: 32px;
+    height: 42px;
+    margin: 20px 40px;
+}
+
+.file-icon::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    line-height: 1.5;
+    /*color: #3b4351;*/
+    font-size: .8rem;
+    text-rendering: optimizeLegibility;
+    box-sizing: inherit;
+    font-family: Arial, Tahoma, sans-serif;
+    font-weight: 300;
+    display: inline-block;
+    border-radius: 4px;
+    background-color: var(--color-blue);
+}
+
+.file-icon::after {
+    display: block;
+    content: "";
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 0;
+    height: 0;
+    border-bottom-left-radius: 2px;
+    border-width: 4px;
+    border-style: solid;
+    border-color: var(--panel-color) var(--panel-color) rgba(255, 255, 255, .35) rgba(255, 255, 255, .35);
+}
+
+.file-icon h5 {
+    position: absolute;
+    top: 100%;
+    left: -40px;
+    right: -40px;
+    min-height: 22px;
+    width: auto;
+    margin: 0;
+    padding: 0;
+    color: var(--font-color);
+    font-weight: 400;
+    text-rendering: optimizeLegibility;
+    box-sizing: inherit;
+    font-family: Arial, Tahoma, sans-serif;
+    font-size: x-small;
+    text-align: center;
+    display: inline-block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.file-icon:hover h5 {
+    background-color: var(--highlight-color);
+    color: var(--panel-color);
+}
+
+.file-icon.add {
+    opacity: 0.5;
+    transition: opacity ease-in-out 0.3s;
+    display: block;
+    margin: 0 auto;
+}
+
+.file-icon.add:hover {
+    opacity: 1;
+}
+
+.file-icon.add label {
+    cursor: pointer;
+    position: absolute;
+    inset: 0;
+    text-align: center;
+    color: var(--highlight-color);
+}
+
+.file-icon.add label strong {
+    font-size: 1.5rem;
+    line-height: 1.5;
+    font-weight: 400;
+    text-rendering: optimizeLegibility;
+    box-sizing: inherit;
+    font-family: Arial, Tahoma, sans-serif;
+    display: inline-block;
+    border-radius: 4px;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.file-icon>.remove {
+    background: red;
+    border: solid 1px white;
+    border-radius: 10px;
+    width: 16px;
+    height: 16px;
+    line-height: 16px;
+    padding: 0;
+    font-size: x-small;
+    text-align: center;
+    color: white;
+    cursor: pointer;
+    position: absolute;
+    top: -5px;
+    left: -5px;
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.file-icon:has(>.remove):hover>.remove {
+    opacity: .8;
+}
+
+.file-icon>.remove:hover {
+    opacity: 1 !important;
+}

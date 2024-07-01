@@ -1,0 +1,132 @@
+.form {
+    position: relative;
+    min-width: 400px;
+    margin: 20px;
+    padding: 20px;
+    border-radius: 20px;
+    box-shadow: 0 0 20px 0 #333;
+    border: 1px solid #ccc;
+    overflow: hidden;
+    color: var(--font-color);
+}
+
+.form .form,
+.modal-content .form,
+.table-container .form {
+    margin: 0;
+    padding: 0;
+    border: none;
+    box-shadow: none;
+    overflow: visible;
+}
+
+.form>.form-section {
+    padding: 20px 0;
+}
+
+.form.column>.form-section {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.form>.spacer {
+    flex-grow: 1;
+}
+
+.form .grow {
+    flex-grow: 1;
+    width: 100%;
+}
+
+.form .form>.form-section {
+    padding: 0;
+}
+
+.form>h2 {
+    margin-top: 0;
+    cursor: default;
+}
+
+.form .toolbar {
+    position: static;
+    box-shadow: none;
+    border: none;
+    width: auto;
+}
+
+.toolbar>.form {
+    margin: 5px;
+}
+
+.toolbar>.form dt,
+.toolbar>.form dd {
+    text-align: center;
+    margin-bottom: 5px;
+}
+
+.toolbar>.form>h2 {
+    margin: 0;
+    font-size: medium;
+    text-align: center;
+}
+
+.toolbar>.form>.form-section {
+    margin: 0;
+}
+
+.sidebar .form{
+    min-width: auto;
+}
+
+.form select {
+    width: 100%;
+    padding: 5px;
+    margin: 5px 0;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background: var(--bg-color);
+    color: var(--font-color);
+}
+
+.form select option {
+    background: var(--bg-color);
+    color: var(--font-color);
+}
+
+.form label>input[type="color"] {
+    display: block;
+    cursor: pointer;
+    width: 40px;
+    height: 40px;
+    margin: 0 6px;
+    text-align: center;
+    color: var(--font-color);
+    background: none;
+    border: none;
+}
+
+.form dl {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.form dl dt {
+    flex-basis: 100px;
+    flex-shrink: 0;
+    flex-grow: 0;
+}
+
+.form dl dd {
+    flex-grow: 1;
+    flex-shrink: 1;
+    flex-basis: 100px;
+    margin: 0;
+}
+
+.form dl dd>.form {
+    font-style: italic;
+    font-size: small;
+}

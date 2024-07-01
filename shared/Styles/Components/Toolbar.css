@@ -1,0 +1,218 @@
+.toolbar {
+    position: fixed;
+    left: 0;
+    right: 0;
+    min-height: 50px;
+    max-height: 50vh;
+    overflow: auto;
+    overflow-x: hidden;
+    display: flex;
+    flex-wrap: wrap;
+    color: white;
+    z-index: 205;
+    align-items: center;
+    justify-content: center;
+}
+
+.toolbar:not(.top) {
+    bottom: 0;
+    padding: 10px;
+    background: var(--panel-color);
+    box-shadow: 0 0 10px 0 var(--font-color);
+}
+
+.toolbar.top {
+    top: 0;
+    left: auto;
+    justify-content: flex-end;
+}
+
+.modal-content .toolbar {
+    position: relative;
+    margin-bottom: 100px;
+}
+
+.toolbar>.section {
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin: 0 auto;
+    margin-bottom: 10px;
+    display: none;
+}
+
+.toolbar>.section:has(>*) {
+    display: flex;
+}
+
+.toolbar>.grow,
+.toolbar>.section>.grow {
+    flex-grow: 1;
+    flex-wrap: nowrap;
+}
+
+.toolbar .spacer {
+    flex-grow: 1;
+}
+
+.toolbar .divider {
+    width: 1px;
+    height: 30px;
+    background: var(--font-color);
+    margin: 0 10px;
+}
+
+.toolbar>label:not(.text, .speech, .input>.file, .range),
+.toolbar>.section>label:not(.text, .speech, .input>.file, .range),
+.toolbar button:not(.send) {
+    position: relative;
+    display: block;
+    cursor: pointer;
+    width: 40px;
+    height: 40px;
+    margin: 0 6px;
+    text-align: center;
+    border-radius: 50%;
+    color: var(--font-color);
+    background: none;
+    border: none;
+}
+
+.toolbar button.aido img {
+    max-width: 100%;
+    max-height: 100%;
+    filter: none !important;
+}
+
+.toolbar>label:not(.text, .speech, .input>.file, .range):hover,
+.toolbar>.section>label:not(.text, .speech, .input>.file, .range):hover,
+.toolbar button:not(.send):hover {
+    background: var(--highlight-color);
+}
+
+.toolbar>label:not(.text, .speech, .input>.file, .range)>span,
+.toolbar>.section>label:not(.text, .speech, .input>.file, .range)>span,
+.toolbar button:not(.send)>span {
+    position: absolute;
+    bottom: -10px;
+    left: 0;
+    right: 0;
+    display: block;
+    text-align: center;
+    font-size: small;
+    font-weight: bold;
+}
+
+.toolbar>label:not(.text, .speech, .input>.file, .range)>img,
+.toolbar>.section>label:not(.text, .speech, .input>.file, .range)>img {
+    margin-top: 8px;
+}
+
+.toolbar>label.microphone:has(input:not(:checked))::after,
+.toolbar>.section>label.microphone:has(input:not(:checked))::after {
+    content: '';
+    position: absolute;
+    top: 4px;
+    left: 16px;
+    border-left: solid 2px var(--font-color);
+    transform: rotate(-45deg);
+    width: 50%;
+    height: 50%;
+}
+
+.toolbar>label:has(input:checked),
+.toolbar>.section>label:has(input:checked) {
+    background: var(--color-red);
+}
+
+.toolbar>label>input[type="checkbox"],
+.toolbar>.section>label>input[type="checkbox"] {
+    display: none;
+}
+
+/* 
+.toolbar>.input {
+    height: var(--input-height);
+    margin-left: 20px;
+}
+
+.toolbar>.input textarea {
+    padding-top: 15px;
+}
+
+
+.toolbar>.input:not(input[type="text"]:focus),
+.toolbar>.input:not(textarea:focus, >label .fullscreen) {
+    --input-height: 50px;
+}
+
+.toolbar>.input input[type="text"],
+.toolbar>.input textarea:not(.fullscreen:focus) {
+    min-height: 30px !important;
+    height: 30px !important;
+}
+
+.toolbar>.input input[type="text"]:not(:focus),
+.toolbar>.input textarea:not(:focus, .fullscreen) {
+    min-height: 30px !important;
+    height: 30px !important;
+}
+
+.toolbar>.input:has(input[type="text"]:focus),
+.toolbar>.input:has(textarea:not(.fullscreen):focus) {
+    position: fixed;
+    top: 50%;
+    left: calc(50% - var(--max-width) / 2 + 5px);
+    width: calc(var(--max-width) - 50px);
+    box-shadow: 0 0 10px 0 var(--font-color);
+    z-index: 200;
+} */
+
+.toolbar>.input>.speech {
+    border-radius: 10px 0 0 10px;
+}
+
+@media (max-width: 768px) {
+
+    .toolbar {
+        max-height: 150px;
+        flex-wrap: wrap;
+    }
+
+    .toolbar>label:not(.text, .speech, .input>.file),
+    .toolbar>.section>label:not(.text, .speech, .input>.file),
+    .toolbar button:not(.send) {
+        width: 40px;
+        height: 40px;
+        margin: 5px;
+    }
+
+    .toolbar>.input {
+        flex-grow: 1;
+    }
+
+    .toolbar>.section>.file,
+    .toolbar>.input>.speech {
+        display: none !important;
+    }
+
+    .toolbar>.input>.file {
+        display: block !important;
+    }
+
+    .toolbar>.input>.file span {
+        display: none;
+    }
+
+    .toolbar>.input:has(input[type="text"]:focus),
+    .toolbar>.input:has(textarea:not(.fullscreen):focus) {
+        top: calc(50% - 150px);
+    }
+
+    .toolbar>.spacer,
+    .toolbar>.divider {
+        display: none;
+    }
+}

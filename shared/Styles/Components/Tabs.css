@@ -1,0 +1,41 @@
+.tabs {
+    position: relative;
+    background: var(--panel-color);
+}
+
+.tab-container {
+    position: relative;
+    display: flex;
+    flex-direction: row;
+    gap: 2px;
+}
+
+.tab-container .tab {
+    padding: 4px 10px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    cursor: pointer;
+    color: var(--font-color);
+}
+
+.tab-container .tab:not(.selected):hover {
+    color: var(--highlight-color);
+}
+
+.tab-container .tab.selected {
+    background: var(--highlight-color);
+}
+
+.tab-content {
+    padding: 20px;
+    overflow: hidden;
+}
+
+.tab-content>* {
+    display: none;
+}
+
+.tab-content>*.open {
+    display: block;
+}

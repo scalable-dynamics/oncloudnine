@@ -1,0 +1,57 @@
+.list {
+    position: relative;
+}
+
+.list.files.large .folder>.remove,
+.list.files.large .file-icon>.remove,
+.sidebar .list.history .folder>.remove,
+.sidebar .list.history .file-icon>.remove {
+    width: 12px;
+    height: 12px;
+    line-height: 11px;
+    font-size: xx-small;
+}
+
+.list.files.large .file-icon,
+.sidebar .list.history .file-icon {
+    width: 16px;
+    height: 21px;
+    margin: 6px 0;
+    margin-right: 100px;
+}
+
+.list.files.large .file-icon::after,
+.sidebar .list.history .file-icon::after {
+    border-width: 2px;
+}
+
+.list.files.large .file-icon h5,
+.sidebar .list.history .file-icon h5 {
+    position: static;
+    margin-left: 20px;
+    margin-top: -6px;
+    line-height: 1.5;
+    font-size: small;
+    padding-left: 6px;
+    max-width: 85px;
+    text-overflow: ellipsis;
+}
+
+.sidebar .list.history .file-icon {
+    white-space: nowrap;
+    margin-right: 150px;
+}
+
+.sidebar .list.history .file-icon h5 {
+    max-width: var(--sidebar-width);
+    width: var(--sidebar-width);
+    text-align: left;
+}
+
+@media (max-width: 768px) {
+
+    .sidebar .list.history .file-icon h5 {
+        max-width: calc(var(--sidebar-width) - 50px);
+        width: calc(var(--sidebar-width) - 50px);
+    }
+}

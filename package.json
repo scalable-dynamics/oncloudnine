@@ -4,7 +4,7 @@
     "description": "",
     "main": "app.js",
     "scripts": {
-        "start": "node ./build.js --main renderModule1 --apps module1,module2",
+        "start": "node ./build.js --main renderModule1 --apps module1",
         "deploy": "build % npx wrangler pages deploy ./public"
     },
     "devDependencies": {

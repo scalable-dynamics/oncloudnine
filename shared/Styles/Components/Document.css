@@ -1,0 +1,170 @@
+.document {
+    position: relative;
+    max-width: var(--max-width);
+    margin: 80px auto;
+    padding: 20px;
+    /* box-shadow: 0 0 20px 0 #333; */
+    /* border: 1px solid #ccc; */
+    /* background: var(--panel-color); */
+    color: var(--font-color);
+    overflow: hidden;
+}
+
+.document>h1 {
+    padding-left: 6px;
+    margin-top: 0;
+    display: none;
+}
+
+.document .output {
+    --max-width: 100%;
+}
+
+.document .actions {
+    position: fixed;
+    top: 15px;
+    right: 20px;
+    display: flex;
+    gap: 10px;
+    z-index: 205;
+    padding: 5px;
+}
+
+.document .actions>button:not(.close) {
+    background: none;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    font-size: large;
+    color: var(--font-color);
+}
+
+.document .actions>button:hover {
+    color: var(--highlight-color);
+}
+
+.document .actions>button:has(.download) {
+    color: var(--color-blue);
+}
+
+.document .actions>button:has(+.close) {
+    margin-right: 20px;
+}
+/* 
+.document .actions>.close {
+    position: fixed;
+    margin-top: -2px;
+    left: calc(50% + var(--max-width) / 2);
+} */
+
+.document .content {
+    margin: 20px;
+}
+
+.document .content pre {
+    background-color: var(--panel-color);
+    color: var(--font-color);
+    padding: 20px;
+    border-radius: 20px;
+    font-size: medium;
+    position: relative;
+    overflow-x: auto;
+    white-space: pre-wrap;
+}
+
+code {
+    background-color: var(--panel-color);
+    color: var(--font-color);
+    padding: 2px 4px;
+    border-radius: 4px;
+    font-size: small;
+    position: relative;
+    overflow-x: auto;
+}
+
+code[data-lang] {
+    display: block;
+}
+
+details {
+    margin: 20px;
+    padding: 20px;
+    border-radius: 20px;
+    box-shadow: 0 0 20px 0 #333;
+    border: 1px solid #ccc;
+    background: var(--panel-color);
+    color: var(--font-color);
+    overflow: hidden;
+    position: relative;
+}
+
+details summary {
+    cursor: pointer;
+    font-weight: bold;
+    font-size: medium;
+    padding: 10px;
+    background: var(--highlight-color);
+    color: var(--font-color);
+    border-radius: 10px 10px 0 0;
+    margin: -22px -22px 22px -22px;
+    display: block;
+    position: relative;
+    z-index: 100;
+}
+
+details>button {
+    position: absolute;
+    top: 6px;
+    right: 10px;
+    padding: 4px 8px;
+    border-radius: 0 10px 0 0;
+    background: none;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    font-size: medium;
+    color: var(--font-color);
+    z-index: 101;
+}
+
+details>button:hover {
+    background: var(--panel-color);
+}
+
+.document .docx-wrapper {
+    background: transparent;
+}
+
+.document:has(.docx-wrapper) {
+    box-shadow: none;
+    padding: 0;
+}
+
+.document:has(.docx-wrapper) .content {
+    margin: 0;
+}
+
+.document .docx-wrapper>.docx {
+    margin: 20px;
+    padding: 20px !important;
+}
+
+@media (max-width: 1000px) {
+    .document {
+        --max-width: 100%;
+        padding-left: 50px;
+    }
+}
+
+@media (max-width: 768px) {
+
+    .document {
+        padding: 0;
+    }
+
+    details {
+        margin: 0;
+        margin-top: 10px;
+        border-radius: 0;
+    }
+}

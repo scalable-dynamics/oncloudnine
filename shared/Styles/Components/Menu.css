@@ -1,0 +1,48 @@
+.menu {
+    margin: 0 auto;
+    width: var(--max-width);
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+}
+
+.menu>button {
+    background: var(--panel-color);
+    color: var(--font-color);
+    border: none;
+    cursor: pointer;
+    padding: 10px;
+    margin: 10px;
+    min-width: 250px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px 0 var(--font-color);
+}
+
+.modal-content .menu>button {
+    margin-bottom: 10px !important;
+}
+
+.menu>button h4 {
+    font-size: x-large;
+    padding: 4px;
+    margin: 0;
+}
+
+.menu>button h4+span {
+    display: inline-block;
+    font-size: medium;
+    padding: 2px;
+    margin: 0;
+}
+
+.menu>button:hover {
+    background: var(--highlight-color) !important;
+    color: var(--font-color);
+    box-shadow: 0 0 10px 0 var(--font-color);
+}
+
+.menu>button:hover h4 {
+    color: var(--font-color);
+}

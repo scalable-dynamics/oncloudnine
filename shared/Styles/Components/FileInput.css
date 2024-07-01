@@ -1,0 +1,18 @@
+.file-drop .input .file::before {
+    content: 'Add Files';
+    position: fixed;
+    inset: 0;
+    margin: 120px auto;
+    font-size: xx-large;
+    border: 10px dashed #00ff51;
+    text-align: center;
+    padding-top: 150px;
+    background: var(--accent-color);
+    width: 500px;
+    height: 200px;
+    color: var(--font-color);
+}
+
+.file-drop .input .file.drop::before {
+    border-color: var(--highlight-color);
+}

@@ -1,0 +1,162 @@
+.input {
+    --input-height: 40px;
+    position: relative;
+    width: calc(var(--max-width) / 2);
+    display: flex;
+    align-items: flex-end;
+    max-height: 50vh;
+    min-height: var(--input-height);
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    box-shadow: rgba(0, 0, 0, 0.3) 0px 19px 38px, rgba(0, 0, 0, 0.22) 0px 15px 12px;
+    z-index: 205;
+    background: white;
+}
+
+.input label.text {
+    flex-grow: 1;
+    height: 50px;
+    overflow: hidden;
+}
+
+.input label.text:has(.multiline) {
+    height: 100%;
+}
+
+.input label input[type="checkbox"],
+.input label input[type="file"],
+.toolbar label input[type="checkbox"],
+.toolbar label input[type="file"] {
+    display: none;
+}
+
+.input input[type="text"],
+.input textarea {
+    padding-top: 6px;
+    padding-left: 8px;
+    width: 98%;
+    max-height: 49vh;
+    min-height: calc(var(--input-height) - 12px);
+    line-height: 20px;
+    font-family: sans-serif;
+    color: black;
+    background: white;
+    border: none;
+    outline: none;
+    resize: none;
+    font-size: large;
+    border-radius: 10px;
+}
+
+.input textarea {
+    min-height: 30px;
+    padding-top: 15px;
+}
+
+.input input[type="text"]::placeholder,
+.input textarea::placeholder {
+    color: var(--color-light-gray);
+}
+
+.input textarea.multiline {
+    min-height: 80px;
+    line-height: 30px;
+    position: relative;
+    top: 4px;
+}
+
+.input:has(.fullscreen:focus) {
+    --input-height: calc(100vh - 180px);
+    position: fixed;
+    inset: 80px;
+    width: calc(100% - 160px);
+    height: var(--input-height);
+    max-height: var(--input-height);
+    z-index: 800;
+    display: block;
+}
+
+.input:has(.fullscreen:focus) .text {
+    position: absolute;
+    inset: 0;
+    height: 100%;
+    left: 125px;
+}
+
+.input textarea.fullscreen:focus {
+    max-height: 99%;
+    min-height: 99%;
+    height: 99% !important;
+    padding-top: 0;
+}
+
+.input .file span {
+    display: none;
+}
+
+.input .file,
+.input .speech,
+.input .send {
+    width: 40px;
+    height: calc(var(--input-height) + 10px);
+    margin: 0;
+    padding: 0;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    display: inline-block;
+    background: none;
+}
+
+.input .file svg,
+.input .speech svg,
+.input .file img,
+.input .speech img {
+    margin: 15px 10px;
+}
+
+.input .file:first-child,
+.input .speech:first-child {
+    border-radius: 10px 0 0 10px;
+}
+
+.input:has(.multiline) .file {
+    border-radius: 0 0 0 10px;
+}
+
+.input .send {
+    border-radius: 0 10px 10px 0;
+}
+
+.input .file:hover,
+.input .speech:hover,
+.input .send:hover {
+    background-color: var(--highlight-color);
+}
+
+.input .speech:has(input:checked) {
+    background-color: var(--color-red);
+}
+
+.search-icon {
+    background: transparent;
+    border: none;
+    color: var(--highlight-color);
+    width: 16px;
+    height: 16px;
+    line-height: 16px;
+    padding: 0;
+    cursor: pointer;
+    font-size: x-large;
+    position: absolute;
+    right: 10px;
+    top: 10px;
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+@media (max-width: 768px) {
+    .input {
+        width: var(--max-width);
+    }
+}

@@ -1,0 +1,20 @@
+{
+  "compilerOptions": {
+    "alwaysStrict": true,
+    "noImplicitAny": false,
+    "noEmitOnError": true,
+    "removeComments": true,
+    "sourceMap": false,
+    "skipLibCheck": true,
+    "strict": true,
+    "target": "ES2022",
+    "module": "ES2022",
+    "moduleResolution": "Node",
+    "jsx": "react",
+    "jsxFactory": "$element",
+    "jsxFragmentFactory": "$children",
+    "outDir": "../build/shared",
+    "declarationDir": "../build/types/shared",
+    "declaration": true
+  }
+}

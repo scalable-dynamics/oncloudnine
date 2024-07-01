@@ -1,0 +1,267 @@
+:root {
+    --color-orange: #FF7676;
+    --color-red: #EA6060;
+    --color-green: #57CA85;
+    --color-purple: #5B247A;
+    --color-blue: #6078EA;
+    --color-charcoal: #1E1E1E;
+    --color-gray: #252526;
+    --color-light-gray: #37373D;
+    --color-off-white: #F1F3F3;
+    --color-creme: #E6E6E6;
+    --color-fade-1: #CBD9E6;
+    --color-fade-2: #B9CEDF;
+    --color-fade-3: #98B4CD;
+    --color-fade-4: #8CA7C0;
+    --color-fade-5: #517594;
+    --page-width: 100%;
+    --max-width: 1000px;
+    color: black;
+}
+
+body,
+html {
+    height: 100%;
+    margin: 0;
+    font-family: Arial, sans-serif;
+}
+
+body:has(.modal.open),
+html:has(.modal.open) {
+    overflow: hidden;
+}
+
+body {
+    --font-color: black;
+    --panel-color: white;
+    --muted-color: var(--color-creme);
+    --accent-color: var(--color-off-white);
+    --highlight-color: orange;
+    --background-color: white;
+    background-color: white;
+}
+
+body.dark {
+    --font-color: white;
+    --panel-color: var(--color-gray);
+    --muted-color: var(--color-gray);
+    --accent-color: var(--color-light-gray);
+    --highlight-color: orange;
+    --background-color: var(--color-charcoal);
+    background-color: var(--color-charcoal);
+}
+
+/* img {
+    pointer-events: none;
+} */
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+.text-content {
+    margin: .1rem auto;
+    padding: 0;
+    width: var(--max-width);
+    cursor: default;
+    color: var(--font-color);
+}
+
+button {
+    background: none;
+    border: none;
+}
+
+button.recording {
+    background-color: var(--color-red) !important;
+}
+
+button.recording img {
+    animation: pop 1s infinite;
+}
+
+button>h1,
+button>h2,
+button>h3,
+button>h4,
+button>h5,
+button>h6 {
+    width: 100%;
+    cursor: pointer;
+}
+
+.form>h1,
+.form>h2,
+.form>h3,
+.form>h4,
+.form>h5,
+.form>h6 {
+    width: 100%;
+    cursor: pointer;
+}
+
+button:active,
+button:focus,
+button:hover {
+    outline: none;
+}
+
+button:hover>img,
+body.dark button>img,
+body.dark label>img,
+body.dark span>img,
+body.dark a>img {
+    filter: invert();
+}
+
+body.dark .input button>img,
+body.dark .input label>img,
+body.dark .input span>img,
+body.dark .input a>img {
+    filter: none;
+}
+
+/* 
+button:active,
+button:focus {
+    background: none !important;
+    color: var(--font-color) !important;
+}
+button:active img,
+button:focus img {
+    filter: none !important;
+} */
+
+button.close {
+    width: 25px;
+    height: 25px;
+    line-height: 25px;
+    border-radius: 50%;
+    border: none;
+    background-color: var(--font-color);
+    color: var(--panel-color);
+    text-align: center;
+    z-index: 105;
+    cursor: pointer;
+}
+
+body.dark button.close {
+    background-color: var(--panel-color);
+    color: var(--font-color);
+}
+
+button.close:hover {
+    background-color: var(--highlight-color) !important;
+    color: var(--font-color) !important;
+}
+
+@media print {
+
+    .action-container,
+    .loader-container,
+    .buttons,
+    button,
+    label,
+    .toolbar,
+    .header,
+    .input {
+        display: none !important;
+    }
+}
+
+:root *.mobile-device {
+    display: none !important;
+}
+
+@media (max-width: 768px) {
+    :root {
+        --max-width: 96%;
+    }
+
+    :root *.wide-screen {
+        display: none !important;
+    }
+
+    :root *.mobile-device {
+        display: block !important;
+    }
+
+    .diagram>.section {
+        flex-direction: column;
+    }
+
+    .folder>.remove,
+    .file-icon>.remove {
+        width: 12px;
+        height: 12px;
+        line-height: 11px;
+        font-size: xx-small;
+    }
+
+    .file-icon {
+        width: 16px;
+        height: 21px;
+        margin: 6px 0;
+        margin-right: 100px;
+    }
+
+    .file-icon::after {
+        border-width: 2px;
+    }
+
+    .file-icon h5 {
+        position: static;
+        margin-left: 20px;
+        margin-top: 6px;
+        max-width: 85px;
+        text-overflow: ellipsis;
+    }
+}
+
+@keyframes float {
+
+    0%,
+    100% {
+        transform: translateY(4px);
+    }
+
+    50% {
+        transform: translateY(-4px);
+    }
+}
+
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes drift {
+    from {
+        transform: translateY(-100px) scale(0);
+        opacity: 1;
+    }
+
+    to {
+        transform: translateY(100vh) scale(1.2);
+        opacity: 0;
+    }
+}
+
+@keyframes pop {
+    from {
+        transform: scale(.6)
+    }
+
+    to {
+        transform: scale(1)
+    }
+}
