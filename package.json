@@ -1,0 +1,20 @@
+{
+    "name": "oncloudnine",
+    "version": "1.0.0",
+    "description": "",
+    "main": "app.js",
+    "scripts": {
+        "start": "node ./build.js --main renderModule1 --apps module1,module2",
+        "deploy": "build % npx wrangler pages deploy ./public"
+    },
+    "devDependencies": {
+        "@cloudflare/workers-types": "^4.20240620.0",
+        "autoprefixer": "^10.4.19",
+        "chokidar": "^3.6.0",
+        "cssnano": "^7.0.3",
+        "postcss": "^8.4.39",
+        "terser": "^5.31.1",
+        "typescript": "^5.5.2",
+        "wrangler": "^3.62.0"
+    }
+}

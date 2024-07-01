@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    "alwaysStrict": true,
+    "noImplicitAny": false,
+    "noEmitOnError": true,
+    "removeComments": true,
+    "sourceMap": false,
+    "skipLibCheck": true,
+    "strict": true,
+    "target": "esnext",
+    "lib": [
+      "esnext"
+    ],
+    "outFile": "../build.js"
+  }
+}
