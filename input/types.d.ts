@@ -76,49 +76,29 @@ interface IAssistantActivity {
     settings: AssistantSettings;
 }
 
-type Entity = {
-    id: string;
-    components: any[];
-    add: (component: any) => Entity;
-    remove: (component: any) => Entity;
-    removeComponents: <T = any>(componentType: new (...args: any[]) => T) => Entity;
-    get: <T = any>(componentType: new (...args: any[]) => T) => T | undefined;
-};
-interface System {
-    id: string;
-    update: (entity: Entity) => void;
-}
-class ECS {
-    entities: Entity[];
-    systems: System[];
-    findSystem<T = System>(id: string): T;
-    findEntity(id: string): Entity | undefined;
-    findComponent<T = any>(componentTypeOrName: new (...args: any[]) => T | string): T | undefined;
-    findComponents<T = any>(componentType: new (...args: any[]) => T): T[];
-    removeEntity(entity: Entity): void;
-    removeComponents(components: any[]): void;
-    createEntity(id: string, ...components: any[]): Entity;
-    createSystem(id: string, update: (entity: Entity) => void, query?: (component: any) => boolean): System;
-    addSystem(system: System): void;
-    update(): void;
-    runDelayed(time?: DOMHighResTimeStamp): void;
-    private intervalId;
-    start(interval?: number): void;
+class AudioPlayer {
+    private fileStore;
+    private onStop;
+    private queue;
+    private currentAudio;
+    constructor(fileStore: IFileStore, onStop: () => void);
+    play(file: string | Blob): Promise<void>;
+    private playNext;
     stop(): void;
-    saveState(name: string, fileStore: IFileStore): Promise<void>;
-    loadState(name: string, fileStore: IFileStore, componentMap: {
-        [key: string]: new (...args: any[]) => any;
-    }): Promise<void>;
-    createGraph(): {
-        nodes: {
-            id: string;
-            label: string;
-        }[];
-        edges: {
-            source: string;
-            target: any;
-        }[];
-    };
+}
+
+class BrowserSpeechOutputManager implements ISpeechOutputManager {
+    #private;
+    defaultVoice?: string | undefined;
+    isSpeaking: boolean;
+    isEnabled: boolean;
+    onStartSpeaking: IEvent<string>;
+    onStopSpeaking: IEvent<void>;
+    constructor(defaultVoice?: string | undefined);
+    init(): Promise<void>;
+    voices(): Promise<string[]>;
+    startSpeaking(text: string, voice?: string | undefined): void;
+    stopSpeaking(): void;
 }
 
 class FaceComponent {
@@ -341,13 +321,6 @@ namespace $Images {
     export const ZipIcon: JSX.SvgImage;
 }
 function createImage(name: string): HTMLImageElement;
-class HomeViewModel {
-    title: string;
-    content: string;
-}
-
-{};
-
 interface CardProps {
     data: any;
     title?: string;
@@ -366,15 +339,6 @@ interface DocumentProps {
     close?: () => void;
 }
 function DocumentPanel(props: DocumentProps): any;
-{};
-
-interface FileInputProps extends JSX.Component<HTMLElement> {
-    fileProcessor?: IFileProcessor | undefined;
-    onFilesAdded: (files: File[]) => void;
-    dropTarget?: JSX.IReference<HTMLElement> | undefined;
-    max_size?: number;
-}
-function FileInput(props: FileInputProps): any;
 {};
 
 interface FormProps extends JSX.Component<HTMLElement> {
@@ -469,20 +433,6 @@ interface TabsProps {
     onSelect?: (tab: string) => void;
 }
 function Tabs(props: TabsProps, children: (HTMLElement | HTMLElement[]) | (() => HTMLElement[])): any;
-{};
-
-type TextInputElement = HTMLElement & {
-    value?: string;
-};
-interface TextInputProps extends JSX.Component<TextInputElement> {
-    onValueChanged: (value: string) => void;
-    fileProcessor?: IFileProcessor;
-    onFilesAdded?: (files: File[]) => void;
-    placeholder?: string | undefined;
-    multiline?: boolean | undefined;
-    max_size?: number;
-}
-function TextInput(props: TextInputProps, children: any): any;
 {};
 
 function ShowTooltip(text: string, element: HTMLElement, seconds?: number): void;
@@ -759,6 +709,51 @@ namespace JSX {
         canvas: CanvasElement & Reference<HTMLCanvasElement>;
         nav: BasicElement;
     }
+}
+
+type Entity = {
+    id: string;
+    components: any[];
+    add: (component: any) => Entity;
+    remove: (component: any) => Entity;
+    removeComponents: <T = any>(componentType: new (...args: any[]) => T) => Entity;
+    get: <T = any>(componentType: new (...args: any[]) => T) => T | undefined;
+};
+interface System {
+    id: string;
+    update: (entity: Entity) => void;
+}
+class ECS {
+    entities: Entity[];
+    systems: System[];
+    findSystem<T = System>(id: string): T;
+    findEntity(id: string): Entity | undefined;
+    findComponent<T = any>(componentTypeOrName: new (...args: any[]) => T | string): T | undefined;
+    findComponents<T = any>(componentType: new (...args: any[]) => T): T[];
+    removeEntity(entity: Entity): void;
+    removeComponents(components: any[]): void;
+    createEntity(id: string, ...components: any[]): Entity;
+    createSystem(id: string, update: (entity: Entity) => void, query?: (component: any) => boolean): System;
+    addSystem(system: System): void;
+    update(): void;
+    runDelayed(time?: DOMHighResTimeStamp): void;
+    private intervalId;
+    start(interval?: number): void;
+    stop(): void;
+    saveState(name: string, fileStore: IFileStore): Promise<void>;
+    loadState(name: string, fileStore: IFileStore, componentMap: {
+        [key: string]: new (...args: any[]) => any;
+    }): Promise<void>;
+    createGraph(): {
+        nodes: {
+            id: string;
+            label: string;
+        }[];
+        edges: {
+            source: string;
+            target: any;
+        }[];
+    };
 }
 
 class EventManager<T> {
