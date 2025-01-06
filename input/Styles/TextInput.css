@@ -4,6 +4,7 @@
     width: calc(var(--max-width) / 2);
     display: flex;
     align-items: flex-end;
+    margin: 0 auto;
     max-height: 50vh;
     min-height: var(--input-height);
     border: 1px solid #ccc;

@@ -1,3 +1,20 @@
+class OpenAIRealtimeVoiceChat {
+    inputAudioBuffer: Int16Array<ArrayBuffer>;
+    onReady: any;
+    onUserSpeechStarted: any;
+    onUserSpeechStopped: any;
+    onAgentSpeechStarted: any;
+    onAgentSpeechStopped: any;
+    addMessage: any;
+    constructor(onReady: any, onUserSpeechStarted: any, onUserSpeechStopped: any, onAgentSpeechStarted: any, onAgentSpeechStopped: any, addMessage: any);
+    init(EPHEMERAL_KEY?: string): Promise<{
+        sendMessage(instructions: any): void;
+        stop(): void;
+    } | undefined>;
+}
+
+{};
+
 namespace $Images {
     export const AboutIcon: JSX.SvgImage;
     export const AddIcon: JSX.SvgImage;
@@ -74,6 +91,119 @@ namespace $Images {
     export const ZipIcon: JSX.SvgImage;
 }
 function createImage(name: string): HTMLImageElement;
+interface PersonaProps extends JSX.Component<HTMLElement> {
+    animated?: boolean;
+    settings: PersonaSettings;
+    onClick?: () => void;
+    nose?: JSX.IReference<HTMLElement>;
+    onPersonaChanged?: IEvent<void>;
+    onStartSpeaking: IEvent<string>;
+    onStopSpeaking: IEvent<void>;
+}
+function Persona(props: PersonaProps): any;
+function getPersonaProperties(settings: PersonaSettings, small?: boolean): {
+    [property: string]: string;
+};
+{};
+
+interface PersonaSettings {
+    name: string;
+    description: string;
+    welcome?: string;
+    knowledge: string;
+    image?: string;
+    showOutline?: boolean;
+    showHair?: boolean;
+    showNose?: boolean;
+    avatar: number;
+    voice: string;
+    eyeColor: string;
+    eyeSpacing: number;
+    eyeWidth: number;
+    eyeBrowColor: string;
+    eyeBrowSize: number;
+    eyeLidColor: string;
+    eyeOutlineColor: string;
+    mouthSize: number;
+    mouthWidth: number;
+    mouthHeight: number;
+    noseSize: number;
+    noseWidth: number;
+    noseHeight: number;
+    lipColor: string;
+    lipSize: number;
+    skinHue: number;
+    skinBrightness: number;
+    skinGrayScale: number;
+    speechEnabled: boolean;
+    speechDetectionEnabled: boolean;
+    speechDetectionThreshold: number;
+}
+
+class FaceAnimation extends ECS {
+    blinkSystem: BlinkSystem;
+    eyeMovementSystem: EyeMovementSystem;
+    eyeBrowSystem: EyeBrowSystem;
+    mouthSystem: MouthSystem;
+    constructor(leftEye: HTMLElement, leftEyeBrow: HTMLElement, leftIris: HTMLElement, rightEye: HTMLElement, rightEyeBrow: HTMLElement, rightIris: HTMLElement, mouth: HTMLElement, small?: boolean);
+}
+class BlinkSystem implements System {
+    id: string;
+    private lastBlinkTime;
+    private blinkInterval;
+    private blinkDuration;
+    update(entity: Entity): void;
+    private blink;
+}
+class EyeMovementSystem implements System {
+    id: string;
+    private mouse;
+    private targetX;
+    private targetY;
+    private currentX;
+    private currentY;
+    isSmall: boolean;
+    private lastMouseMoveTime;
+    private isRandomLooking;
+    private randomLookDuration;
+    private randomLookPauseDuration;
+    private randomLookTimer;
+    private randomLookState;
+    constructor(isSmall: boolean);
+    private addMouseListeners;
+    private updateRandomLook;
+    update(entity: Entity): void;
+}
+class EyeBrowSystem implements System {
+    id: string;
+    private lastChangeTime;
+    private changeInterval;
+    private currentGesture;
+    update(entity: Entity): void;
+    private changeEyeBrows;
+    private getEyeBrowPositions;
+}
+class MouthSystem implements System {
+    private ecs;
+    id: string;
+    private animationTimeout;
+    constructor(ecs: ECS);
+    update(entity: Entity): void;
+    startSpeaking(text: string): void;
+    stopSpeaking(): void;
+    setExpression(expression: 'smile' | 'puzzled' | 'default'): void;
+    private getMouthShape;
+}
+
+function applyDefaultSettings(settings?: Partial<PersonaSettings>): any;
+interface PersonaViewProps {
+    settings: PersonaSettings;
+    startSpeaking: IEvent<string>;
+    stopSpeaking: IEvent<void>;
+    onClick?: () => void;
+}
+function PersonaView(props: PersonaViewProps): any;
+
 interface CardProps {
     data: any;
     title?: string;
@@ -289,9 +419,6 @@ interface ConversationSettings {
     enableMessageSpeak: boolean;
     onSelectFile?: (file: IConversationFile) => void;
 }
-interface IConversationResponseHandler {
-    onInputReceived(type: any, input: any, conversation: IConversationContext): Promise<void> | void;
-}
 
 function isElementReference(arg: any): arg is JSX.IReference<HTMLElement>;
 function isReference<T>(arg: any): arg is JSX.IReference<T>;
@@ -462,6 +589,51 @@ namespace JSX {
         canvas: CanvasElement & Reference<HTMLCanvasElement>;
         nav: BasicElement;
     }
+}
+
+type Entity = {
+    id: string;
+    components: any[];
+    add: (component: any) => Entity;
+    remove: (component: any) => Entity;
+    removeComponents: <T = any>(componentType: new (...args: any[]) => T) => Entity;
+    get: <T = any>(componentType: new (...args: any[]) => T) => T | undefined;
+};
+interface System {
+    id: string;
+    update: (entity: Entity) => void;
+}
+class ECS {
+    entities: Entity[];
+    systems: System[];
+    findSystem<T = System>(id: string): T;
+    findEntity(id: string): Entity | undefined;
+    findComponent<T = any>(componentTypeOrName: new (...args: any[]) => T | string): T | undefined;
+    findComponents<T = any>(componentType: new (...args: any[]) => T): T[];
+    removeEntity(entity: Entity): void;
+    removeComponents(components: any[]): void;
+    createEntity(id: string, ...components: any[]): Entity;
+    createSystem(id: string, update: (entity: Entity) => void, query?: (component: any) => boolean): System;
+    addSystem(system: System): void;
+    update(): void;
+    runDelayed(time?: DOMHighResTimeStamp): void;
+    private intervalId;
+    start(interval?: number): void;
+    stop(): void;
+    saveState(name: string, fileStore: IFileStore): Promise<void>;
+    loadState(name: string, fileStore: IFileStore, componentMap: {
+        [key: string]: new (...args: any[]) => any;
+    }): Promise<void>;
+    createGraph(): {
+        nodes: {
+            id: string;
+            label: string;
+        }[];
+        edges: {
+            source: string;
+            target: any;
+        }[];
+    };
 }
 
 class EventManager<T> {

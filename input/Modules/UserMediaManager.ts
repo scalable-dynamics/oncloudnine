@@ -1,7 +1,7 @@
 export class UserMediaManager {
     public audioContext: AudioContext | null = null;
 
-    private stream: MediaStream | null = null;
+    public stream: MediaStream | null = null;
     //private audioSource: MediaStreamAudioSourceNode | null = null;
 
     constructor(public mediaType: 'camera' | 'microphone' | 'screen', public deviceId: string | undefined = undefined) { }
