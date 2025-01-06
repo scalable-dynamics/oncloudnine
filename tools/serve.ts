@@ -3,19 +3,30 @@ async function servePublicFolder(config, buildFolder, clientFolders, serverFolde
     const fs = require('fs');
     const path = require('path');
     const port = 8080;
-    let api, files: [string, Buffer, string][];
+    const devApiPath = path.join(buildFolder, 'dev-api.js');
+    const api: any = {}, files: [string, Buffer, string][] = [];
     function reloadApi() {
-        const activitiesJs = serverFolders.map(f => combineJs(f)).join('\n') + `
+        const apiNames = serverFolders.flatMap(apiPath => {
+            const apiFiles = getFiles(apiPath, '.js');
+            return apiFiles.filter(file => file != "_worker.js").map(file => path.basename(file, '.js'));
+        });
+        console.log('API Files:', apiNames);
+        const apiCode = serverFolders.map(f => combineJs(f)).join('\n') + `
 function Response(body,options){
     this.body = body;
     this.headers = options.headers || {};
 }
-module.exports = { ${serverFolders} };`;
-        fs.writeFileSync(path.join(buildFolder, 'dev-api.js'), activitiesJs);
-        api = require(path.join(buildFolder, 'dev-api.js'));
+module.exports = { ${apiNames} };`;
+        fs.writeFileSync(devApiPath, apiCode);
+        const devApi = require(devApiPath);
+        for (let key in devApi) {
+            api[key] = devApi[key];
+        }
+        console.log('APIs:', api);
     }
     function reloadApp() {
-        files = clientFolders.map(f => getFiles(f).map((file) => [makeRelativePath(file, f, '/'), fs.readFileSync(file), path.extname(file)])).flat();
+        const newFiles = clientFolders.map(f => getFiles(f).map((file) => [makeRelativePath(file, f, '/'), fs.readFileSync(file), path.extname(file)])).flat();
+        files.splice(0, files.length, ...newFiles);
     }
     reloadApi();
     reloadApp();
@@ -59,14 +70,18 @@ module.exports = { ${serverFolders} };`;
                 res.writeHead(400, { 'Content-Type': 'text/plain' });
                 res.end('Bad Request');
             } else if (req.url.indexOf('/api/') > -1) {
-                res.writeHead(200, { 'Content-Type': 'application/json' });
                 const parts = req.url.split('/');
                 const endpoint = parts[2];
                 const handler = api[endpoint];
+                console.log('API Request:', endpoint);
                 if (handler) {
-                    const result = await handler(apiRequest, envParams);
-                    res.end(JSON.stringify(result));
+                    const response = await handler(apiRequest, envParams);
+                    for (let key in response.headers) {
+                        res.setHeader(key, response.headers[key]);
+                    }
+                    res.end(response.body);
                 } else {
+                    res.writeHead(200, { 'Content-Type': 'application/json' });
                     res.end(JSON.stringify({ error: 'Endpoint not found' }));
                 }
             } else if (req.url === '/' || req.url === '/index.html') {

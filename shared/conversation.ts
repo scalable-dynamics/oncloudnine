@@ -33,7 +33,3 @@ interface ConversationSettings {
     enableMessageSpeak: boolean;
     onSelectFile?: (file: IConversationFile) => void;
 }
-
-interface IConversationResponseHandler {
-    onInputReceived(type: any, input: any, conversation: IConversationContext): Promise<void> | void;
-}

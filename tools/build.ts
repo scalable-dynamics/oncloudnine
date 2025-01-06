@@ -18,6 +18,8 @@ let CONFIG = {};
 if (process.argv.includes('--config')) {
     const index = process.argv.indexOf('--config');
     CONFIG = require(process.argv[index + 1]);
+} else{
+    CONFIG = require('./config.json');
 }
 
 function buildSharedFolders(tsSharedFolder, sharedBuildFolder, publicFolder, publicBuildFolder, imagesFolder, imagesJsFile, imagesTsFile, typesFolder, ...targetFolders: string[]) {
@@ -94,7 +96,7 @@ function execute() {
 
     const tsAppFolders = APPS.map(app => path.join(__dirname, app));
     const tsServiceFolders = SERVICES.map(service => path.join(__dirname, service));
-    const jsServiceFolders = SERVICES.map(service => path.join(buildFolder, service));
+    const jsServiceFolders = SERVICES.map(service => path.join(publicBuildFolder, service));
 
     const tsBuildFolders = [
         tsSharedFolder,
