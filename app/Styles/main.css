@@ -1,0 +1,104 @@
+.main {
+    padding-top: 200px;
+}
+
+.main .content {
+    width: var(--max-width);
+    margin: 0 auto;
+    display: flex;
+    flex-flow: column;
+}
+
+.conversation {
+    width: 80%;
+    margin: 80px auto;
+    min-height: 50vh;
+    margin-bottom: -50vh;
+    align-items: center;
+    display: flex;
+    flex-flow: column;
+}
+
+.conversation .message {
+    margin: 10px 0;
+    padding: 15px;
+    border-radius: 20px;
+    position: relative;
+    color: var(--font-color);
+    max-width: 80%;
+    word-wrap: break-word;
+    box-shadow: 0 0 10px 0 #333;
+}
+
+.conversation .message>h4 {
+    margin: 0;
+}
+
+.conversation .message p img {
+    max-width: 100%;
+    border-radius: 10px;
+    box-shadow: 0 0 10px 0 #333;
+}
+
+.conversation .message.user {
+    background-color: var(--muted-color);
+    align-self: flex-end;
+}
+
+.conversation .message.ai {
+    background-color: var(--accent-color);
+    border: solid 1px var(--muted-color);
+}
+
+.conversation .message.ai:last-child {
+    border-color: var(--color-blue);
+}
+
+.conversation .message>.buttons {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    display: flex;
+    flex-flow: row-reverse;
+}
+
+.conversation .message>.buttons.left {
+    right: auto;
+    left: 10px;
+    flex-flow: row;
+}
+
+.conversation .message>.buttons.small {
+    opacity: 0;
+    transition: opacity .3s ease-in-out;
+    flex-flow: row;
+}
+
+.conversation .message:hover>.buttons.small {
+    opacity: 1;
+}
+
+.conversation .message>.buttons>button {
+    height: 40px;
+    width: 40px;
+    padding: 0;
+    margin: 6px;
+    background: none;
+    border: none;
+    outline: none;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: large;
+    color: var(--font-color);
+}
+
+.conversation .message>.buttons.small>button {
+    height: 20px;
+    width: 20px;
+}
+
+.conversation .message>.buttons.small>button svg,
+.conversation .message>.buttons.small>button img {
+    width: 16px;
+    height: 16px;
+}
