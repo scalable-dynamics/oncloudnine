@@ -4,7 +4,8 @@
     "description": "",
     "main": "app.js",
     "scripts": {
-        "start": "node ./build.js --main renderWorkspace --apps assistant,input,worker,workspace",
+        "build": "cd ./tools && tsc",
+        "start": "node ./build.js --main renderInputView --apps input",
         "deploy": "build % npx wrangler pages deploy ./public"
     },
     "devDependencies": {
