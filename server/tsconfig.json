@@ -1,0 +1,21 @@
+{
+  "compilerOptions": {
+    "alwaysStrict": true,
+    "noImplicitAny": false,
+    "noEmitOnError": true,
+    "removeComments": true,
+    "sourceMap": false,
+    "skipLibCheck": true,
+    "strict": true,
+    "allowJs": true,
+    "outDir": "../build/public/server",
+    "target": "esnext",
+    "module": "esnext",
+    "lib": [
+      "esnext"
+    ],
+    "types": [
+      "@cloudflare/workers-types"
+    ]
+  }
+}
