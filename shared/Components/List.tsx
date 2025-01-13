@@ -65,20 +65,101 @@ export function List(props: ListProps, children: [ListTemplate]) {
     }
 }
 
-export function ListEditor({ items, onAdd, onModify, onRemove }: { items: any[], onAdd: (item: any) => void, onModify: (item: any) => void, onRemove: (item: any) => void }, children:[ListTemplate]) {
-    const list = new ObservableList(items);
-    list.onItemAdded(onAdd);
-    list.onItemRemoved(onRemove);
-    return (
-        <div class="list-editor">
-            <List items={list}>
-                {(item, remove) => (<>
-                    {resolveChildren(children, item, remove)}
-                    <button onclick={() => onModify(item)}>&#x270E;</button>
-                    <button onclick={remove}>&#x2716;</button>
-                </>)}
-            </List>
-            <button onclick={() => list.add({})}>&#x2795;</button>
-        </div>
-    )
+export function ListEditor(
+ {
+   items,
+   onAdd,
+   onModify,
+   onRemove
+ }: {
+   items: any[];
+   onAdd: (item: any) => void;
+   onModify: (item: any) => void;
+   onRemove: (item: any) => void;
+ },
+ children: [ListTemplate]
+) {
+ // 1) Create or subscribe to an ObservableList so we can reactively track items.
+ const list = new ObservableList(items);
+
+ list.onItemAdded(onAdd);
+ list.onItemRemoved(onRemove);
+
+ // 2) Track the currently dragged item/index for reorder (if using DnD)
+ let dragIndex = -1;
+
+ function onDragStart(e: DragEvent, item: any, index: number) {
+   dragIndex = index;
+   // Mark data to let the browser know we are moving items
+   e.dataTransfer?.setData('text/plain', JSON.stringify(item));
+   e.dataTransfer!.effectAllowed = 'move';
+ }
+
+ function onDragOver(e: DragEvent) {
+   e.preventDefault();
+   // Indicate that we can be dropped onto
+   e.dataTransfer!.dropEffect = 'move';
+ }
+
+ function onDrop(e: DragEvent, dropIndex: number) {
+   e.preventDefault();
+
+   // If we are dropping on a new index
+   if (dragIndex !== dropIndex && dragIndex >= 0) {
+     list.moveItem(dragIndex, dropIndex);
+   }
+   dragIndex = -1;
+ }
+
+ // 3) Inline handlers for reorder without drag:
+ function moveUp(index: number) {
+   if (index <= 0) return;
+   list.moveItem(index, index - 1);
+ }
+
+ function moveDown(index: number) {
+   if (index >= list.array.length - 1) return;
+   list.moveItem(index, index + 1);
+ }
+
+ return (
+   <div class="list-editor">
+     <List items={list}>
+       {(item, remove, index) => (
+         <>
+           {/* -- DRAG & DROP HANDLERS -- */}
+           <div
+             class="list-item"
+             draggable={true}
+             ondragstart={(e: DragEvent) => onDragStart(e, item, index)}
+             ondragover={onDragOver}
+             ondrop={(e: DragEvent) => onDrop(e, index)}
+           >
+             {/* -- REORDER BUTTONS -- */}
+             <button onclick={() => moveUp(index)}>&uarr;</button>
+             <button onclick={() => moveDown(index)}>&darr;</button>
+
+             {/* -- USER-DEFINED TEMPLATE CONTENT -- */}
+             {/* {resolveChildren(children, item, remove)} */}
+
+             {/* -- EDIT BUTTON -- */}
+             <button onclick={() => onModify(item)} title="Edit">
+               &#x270E;
+             </button>
+
+             {/* -- REMOVE BUTTON -- */}
+             <button onclick={remove} title="Remove">
+               &#x2716;
+             </button>
+           </div>
+         </>
+       )}
+     </List>
+
+     {/* -- ADD NEW ITEM BUTTON -- */}
+     <button onclick={() => list.add({})} title="Add Item">
+       &#x2795;
+     </button>
+   </div>
+ );
 }

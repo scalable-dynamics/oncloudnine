@@ -3,8 +3,8 @@ type ListEventHandler<T> = (item: T, arg?: any) => void;
 type EventHandler<T> = (arg: T, context?: any) => void | Promise<void>;
 
 interface IEvent<T> {
-    add(handler: EventHandler<T>): void;
-    notify(arg: T, context?: any): void | Promise<void>;
+    add(handler: (arg: T, context?: any) => void | Promise<void>): void;
+    notify(arg: T, context?: any): Promise<void>;
 }
 
 interface IObservableList<T> {

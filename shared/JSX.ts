@@ -4,7 +4,7 @@
     export type SvgImage = () => HTMLImageElement;
 
     export interface IReference<T> {
-        setReference(reference: T);
+        setReference(reference: T): void;
         onLoad: IEvent<T>;
         readonly value?: T;
     }
@@ -14,51 +14,63 @@
     }
 
     export interface Component<T> extends Reference<T> {
-        'class'?: string;
-        'if'?: boolean;
-        'when'?: Promise<any> | IReference<any>;
-        'id'?: string;
+        class?: string;
+        if?: boolean;
+        when?: Promise<any> | IReference<any>;
+        id?: string;
     }
 
     export interface BasicElement extends Component<HTMLElement> {
-        'title'?: string | undefined;
-        'style'?: string | undefined;
-        'draggable'?: boolean;
-        'ondragstart'?: EventHandler<DragEvent>;
-        'ondragenter'?: EventHandler<DragEvent>;
-        'ondragleave'?: EventHandler<DragEvent>;
-        'ondragover'?: EventHandler<DragEvent>;
-        'ondragend'?: EventHandler<DragEvent>;
-        'ondrop'?: EventHandler<DragEvent>;
-        'onclick'?: EventHandler<MouseEvent>;
+        title?: string;
+        style?: string;
+        draggable?: boolean;
+        onclick?: (event: MouseEvent) => void;
+        ondragstart?: (event: DragEvent) => void;
+        ondragenter?: (event: DragEvent) => void;
+        ondragleave?: (event: DragEvent) => void;
+        ondragover?: (event: DragEvent) => void;
+        ondragend?: (event: DragEvent) => void;
+        ondrop?: (event: DragEvent) => void;
     }
 
     export interface ValueElement extends BasicElement {
-        autocomplete?: "off";
-        type?: 'text' | 'password' | 'file' | 'radio' | 'checkbox' | 'date' | 'time' | 'number' | 'range' | 'color' | 'submit' | 'reset';
+        autocomplete?: 'off';
+        type?:
+        | 'text'
+        | 'password'
+        | 'file'
+        | 'radio'
+        | 'checkbox'
+        | 'date'
+        | 'time'
+        | 'number'
+        | 'range'
+        | 'color'
+        | 'submit'
+        | 'reset';
         value?: string;
         name?: string;
-        checked?: 'checked' | undefined;
+        checked?: boolean;
         multiple?: boolean;
         min?: number;
         max?: number;
         step?: number;
         maxlength?: number;
-        placeholder?: string | undefined;
-        oninput?: EventHandler<InputEvent>;
-        onchange?: EventHandler<InputEvent>;
-        onkeypress?: EventHandler<KeyboardEvent>;
-        onpaste?: EventHandler<KeyboardEvent>;
+        placeholder?: string;
+        oninput?: (event: InputEvent) => void;
+        onchange?: (event: InputEvent) => void;
+        onkeypress?: (event: KeyboardEvent) => void;
+        onpaste?: (event: ClipboardEvent) => void;
     }
 
     export interface OptionElement extends ValueElement {
-        disabled?: 'disabled' | undefined;
-        selected?: 'selected' | undefined;
+        disabled?: boolean;
+        selected?: boolean;
     }
 
     export interface ImageElement extends BasicElement {
-        alt: string;
-        src: string;
+        alt?: string;
+        src?: string;
     }
 
     export interface ActionElement extends BasicElement {
@@ -72,10 +84,11 @@
 
     export interface CanvasElement extends BasicElement {
         graph?: any;
-        width: number;
-        height: number;
+        width?: number;
+        height?: number;
     }
 
+    // As an example, you can define more as needed:
     export interface IntrinsicElements {
         p: BasicElement;
         em: BasicElement;
@@ -91,6 +104,7 @@
         footer: BasicElement;
         article: BasicElement;
         section: BasicElement;
+        nav: BasicElement;
         a: ActionElement & Reference<HTMLAnchorElement>;
         button: ActionElement & Reference<HTMLButtonElement>;
         form: FormElement;
@@ -103,9 +117,9 @@
         textarea: ValueElement & { rows?: number } & Reference<HTMLTextAreaElement>;
         select: ValueElement & Reference<HTMLSelectElement>;
         option: OptionElement;
-        label: BasicElement & { 'for'?: string };
+        label: BasicElement & { for?: string };
         span: BasicElement;
-        audio: Reference<HTMLAudioElement> & { src: string; autoplay?: boolean; controls?: boolean; };
+        audio: Reference<HTMLAudioElement> & { src?: string; autoplay?: boolean; controls?: boolean };
         img: ImageElement & Reference<HTMLImageElement>;
         h1: BasicElement;
         h2: BasicElement;
@@ -125,6 +139,5 @@
         li: BasicElement;
         i: BasicElement;
         canvas: CanvasElement & Reference<HTMLCanvasElement>;
-        nav: BasicElement;
     }
 }

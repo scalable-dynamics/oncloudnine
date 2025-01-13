@@ -1,4 +1,4 @@
-export function ShowLightbox(title, element, onClose?: () => void | undefined) {
+export function ShowModalDialog(title, element, onClose?: () => void | undefined) {
     let modal: HTMLElement | null = document.querySelector('.modal.open');
     let removeModal = false;
     if (!modal) {

@@ -29,6 +29,12 @@
         this.removed.add(removed);
     }
 
+    moveItem(fromIndex: number, toIndex: number) {
+        const item = this.array[fromIndex];
+        this.array.splice(fromIndex, 1);
+        this.array.splice(toIndex, 0, item);
+    }
+
     async add(item: any, arg?: any) {
         this.array.push(item);
         await this.added.notify(item, arg);
