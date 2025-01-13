@@ -1,18 +1,88 @@
-.main {
-    padding-top: 200px;
-}
+.main {}
 
 .main .content {
     width: var(--max-width);
     margin: 0 auto;
     display: flex;
     flex-flow: column;
+    padding-top: 300px;
+}
+
+.connecting::after {
+    content: 'Connecting...';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: var(--background-color);
+    color: var(--font-color);
+    font-size: 2em;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.assistant {
+    display: flex;
+    flex-flow: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    padding: 10px 20px;
+    background-color: var(--background-color);
+    z-index: 100;
+    --scale-factor: .8;
+}
+
+.assistant.scrolled,
+.assistant.pinned {
+    position: fixed;
+    top: 60px;
+    width: var(--max-width);
+    margin: 0 auto;
+    --scale-factor: .25;
+    justify-content: space-between;
+}
+
+.assistant .input {
+    margin: 0 auto;
+}
+
+.preview {
+    position: fixed;
+    inset: 0;
+    top: 250px;
+}
+
+iframe {
+    width: 100%;
+    height: 100%;
+}
+
+.loading::after {
+    content: 'Loading...';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 250px;
+    height: 100px;
+    border-radius: 10px;
+    border: solid 1px var(--font-color);
+    cursor: default;
+    background-color: var(--background-color);
+    color: var(--font-color);
+    font-size: 2em;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
 }
 
 .conversation {
-    width: 80%;
-    margin: 80px auto;
-    min-height: 50vh;
+    min-height: 100vh;
     margin-bottom: -50vh;
     align-items: center;
     display: flex;
@@ -101,4 +171,35 @@
 .conversation .message>.buttons.small>button img {
     width: 16px;
     height: 16px;
+}
+
+@media (max-width: 768px) {
+
+    .assistant {
+        --scale-factor: .5;
+    }
+
+    .preview{
+        top: 310px;
+    }
+
+    .conversation .message {
+        max-width: 100%;
+    }
+}
+
+@media print {
+    .assistant {
+        display: none;
+    }
+
+    .conversation .message>.buttons {
+        display: none;
+    }
+
+    .conversation .message {
+        box-shadow: none;
+        color: black;
+        background-color: white;
+    }
 }
