@@ -7,10 +7,14 @@
     position: relative;
     z-index: 201;
     background-color: transparent;
-    opacity: 0;
     transition: opacity 3s ease-in-out;
 }
 
+.open:has(>.persona) {
+    opacity: 1;
+}
+
+/* 
 .open:has(>.persona) {
     --scale-factor: .45;
     opacity: 1;
@@ -22,7 +26,7 @@
 
 .open:has(>.persona).small {
     --scale-factor: .25;
-}
+} */
 
 .persona {
     --person-width: calc(700px * var(--scale-factor));

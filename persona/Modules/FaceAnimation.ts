@@ -276,7 +276,7 @@ export class MouthSystem implements System {
     startSpeaking(text: string) {
         if (!text) return;
 
-        console.log('MouthSystem.startSpeaking', text);
+        //console.log('MouthSystem.startSpeaking', text);
 
         const inputLetters = text.split('');
         let counter = 0;
@@ -298,7 +298,7 @@ export class MouthSystem implements System {
                                     : letter === ',' ? 100
                                         : 50);
             } else {
-                console.log('MouthSystem.doneSpeaking');
+                //console.log('MouthSystem.doneSpeaking');
                 entity.add(new MouthShapeComponent('closed'));
             }
         };
@@ -307,7 +307,7 @@ export class MouthSystem implements System {
     }
 
     stopSpeaking() {
-        console.log('MouthSystem.stopSpeaking');
+        //console.log('MouthSystem.stopSpeaking');
         clearTimeout(this.animationTimeout);
         const entity = this.ecs.findEntity(FaceComponent.EntityId)!;
         const mouthShape = entity.get(MouthShapeComponent)!;

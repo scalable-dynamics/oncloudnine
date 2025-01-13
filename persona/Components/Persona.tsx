@@ -43,11 +43,12 @@ export function Persona(props: PersonaProps) {
     const eyeMovementSystem = $reference<EyeMovementSystem>();
 
     onStartSpeaking.add((text) => {
-        console.log('persona->onStartSpeaking', text);
+        //console.log('persona->onStartSpeaking', text);
         if (!mouthSystem.value) return;
         mouthSystem.value.startSpeaking(text);
     });
     onStopSpeaking.add(() => {
+        //console.log('persona->onStopSpeaking');
         if (!mouthSystem.value) return;
         mouthSystem.value.stopSpeaking();
     });
@@ -163,7 +164,7 @@ export function getPersonaProperties(settings: PersonaSettings, small: boolean =
 
     if (settings.eyeWidth) {
         if (small) {
-            console.log('small eye width', settings.eyeWidth);
+            //console.log('small eye width', settings.eyeWidth);
             properties['--eye-width'] = `${settings.eyeWidth / 2.5}px`;
         } else {
             properties['--eye-width'] = `${settings.eyeWidth}px`;

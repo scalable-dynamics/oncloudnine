@@ -1,14 +1,169 @@
+interface ConversationTileProps {
+    sender: string;
+    content: string;
+}
+function ConversationTile(props: ConversationTileProps): any;
+{};
+
+class AssistanceInputProcessor implements InputProcessor {
+    inputTypes: ('text' | 'speech')[];
+    processInput(input: InputProcessorInput): Promise<InputProcessorOutput | undefined>;
+}
+
+class DiscussionInputProcessor implements InputProcessor {
+    inputTypes: ('text' | 'speech')[];
+    processInput(input: InputProcessorInput): Promise<InputProcessorOutput | undefined>;
+}
+
+class GenerationInputProcessor implements InputProcessor {
+    inputTypes: ('text' | 'speech')[];
+    processInput(input: InputProcessorInput): Promise<InputProcessorOutput | undefined>;
+}
+
+class InMemoryFileStore implements StorageAdapter<File> {
+    files: File[];
+    constructor();
+    add(name: string, file: File): Promise<void>;
+    remove(name: string): Promise<void>;
+    retrieve(name: string): Promise<File | undefined>;
+    list(): Promise<File[]>;
+}
+
+interface StorageAdapter<T> {
+    add(name: string, item: T): Promise<void>;
+    remove(name: string): Promise<void>;
+    retrieve(name: string): Promise<T | undefined>;
+    list(): Promise<T[]>;
+}
+
+interface VectorEmbeddings {
+    name: string;
+    content: string;
+    embeddings: number[];
+}
+class VectorStore implements StorageAdapter<VectorEmbeddings> {
+    embeddings: VectorEmbeddings[];
+    constructor();
+    add(name: string, item: VectorEmbeddings): Promise<void>;
+    remove(name: string): Promise<void>;
+    retrieve(name: string): Promise<VectorEmbeddings | undefined>;
+    list(): Promise<VectorEmbeddings[]>;
+}
+
+type InputType = 'text' | 'speech' | 'image' | 'url' | 'data' | 'file';
+type OutputType = 'content' | 'data' | 'image' | 'input';
+interface InputProcessorInput {
+    value: any;
+    type: InputType;
+}
+interface InputProcessorOutput {
+    value: any;
+    type: OutputType;
+}
+interface InputProcessor {
+    inputTypes: InputType[];
+    processInput(input: InputProcessorInput): Promise<InputProcessorOutput | undefined>;
+}
+interface InputsProcessor {
+    processInputs(inputs: InputProcessorInput[]): Promise<InputProcessorOutput[]>;
+}
+class CompositeInputProcessor implements InputsProcessor {
+    inputProcessors: InputProcessor[];
+    constructor();
+    processInputs(inputs: InputProcessorInput[], aggregatedOutputs?: InputProcessorOutput[]): Promise<InputProcessorOutput[]>;
+}
+
+interface Conversation {
+    id: string;
+    created: Date;
+    modified: Date;
+    title: string;
+    messages: ConversationMessage[];
+    image?: string;
+    summary?: string;
+}
+interface ConversationMessage {
+    id: string;
+    created: Date;
+    modified: Date;
+    title: string;
+    content: string;
+    image?: string;
+    summary?: string;
+}
+class ConversationManager {
+    private conversationStore;
+    constructor(conversationStore: StorageAdapter<File>);
+    getConversation(conversationId?: string): Promise<Conversation>;
+    updateConversation(conversation: Conversation): Promise<void>;
+    deleteConversation(conversationId: string): Promise<void>;
+    getConversations(): Promise<Conversation[]>;
+}
+
+
+
+
+
+
+
+interface Project {
+    id: string;
+    created: Date;
+    modified: Date;
+    title: string;
+    image?: string;
+    summary?: string;
+}
+class ProjectManager {
+    private projectStore;
+    constructor(projectStore: StorageAdapter<File>);
+    getProject(projectId?: string): Promise<Project>;
+    updateProject(project: Project): Promise<void>;
+    deleteProject(projectId: string): Promise<void>;
+    getProjects(): Promise<Project[]>;
+}
+
+class SpeechListener implements ISpeechInputManager {
+    isContinuous: boolean;
+    isListening: boolean;
+    isSpeaking: boolean;
+    onInputReceived: IEvent<ISpeechInput>;
+    onInputPreview: IEvent<ISpeechInput>;
+    onStartListening: IEvent<void>;
+    onStopListening: IEvent<void>;
+    startSpeakingEvent: IEvent<string>;
+    stopSpeakingEvent: IEvent<void>;
+    constructor();
+    speak(text: string): void;
+    stopSpeaking(): void;
+    startListening(continuous?: boolean | undefined): void;
+    stopListening(): void;
+}
+class SpeechQueue {
+    private speechListener;
+    private queue;
+    constructor(speechListener: SpeechListener);
+    speak(text: string): void;
+}
+
+function uuid(): string;
+
 class OpenAIRealtimeVoiceChat {
-    inputAudioBuffer: Int16Array<ArrayBuffer>;
     onReady: any;
     onUserSpeechStarted: any;
     onUserSpeechStopped: any;
     onAgentSpeechStarted: any;
     onAgentSpeechStopped: any;
     addMessage: any;
-    constructor(onReady: any, onUserSpeechStarted: any, onUserSpeechStopped: any, onAgentSpeechStarted: any, onAgentSpeechStopped: any, addMessage: any);
+    onFunctionCalled: any;
+    isUserSpeaking: any;
+    isAgentSpeaking: any;
+    constructor(onReady: any, onUserSpeechStarted: any, onUserSpeechStopped: any, onAgentSpeechStarted: any, onAgentSpeechStopped: any, addMessage: any, onFunctionCalled: any);
     init(EPHEMERAL_KEY?: string): Promise<{
-        sendMessage(instructions: any): void;
+        sendMessage: (message: any) => void;
+        stopSpeaking(): void;
+        mute(): void;
+        unMute(): void;
         stop(): void;
     } | undefined>;
 }
@@ -391,8 +546,6 @@ interface IconButtonProps {
 function IconButton(props: IconButtonProps): any;
 {};
 
-function ShowLightbox(title: any, element: any, onClose?: () => void | undefined): () => void;
-
 interface ListProps extends JSX.Component<any> {
     items: IObservableList<any>;
 }
@@ -424,6 +577,8 @@ interface MenuProps {
 }
 function Menu(props: MenuProps, children: any): any;
 {};
+
+function ShowModalDialog(title: any, element: any, onClose?: () => void | undefined): () => void;
 
 interface TableProps {
     columns?: string[];
@@ -543,11 +698,10 @@ interface ConversationSettings {
     onSelectFile?: (file: IConversationFile) => void;
 }
 
-function isElementReference(arg: any): arg is JSX.IReference<HTMLElement>;
 function isReference<T>(arg: any): arg is JSX.IReference<T>;
-function $element(component: any, props?: {}, ...children: any): HTMLElement | undefined;
-function resolveChildren(children: any, ...args: any[]): any;
-function $children(element: any, children: any): void;
+function isElementReference(arg: any): arg is JSX.IReference<HTMLElement>;
+function $element(component: string | Function, props?: Record<string, any>, ...children: any[]): HTMLElement | undefined;
+function $children(parent: HTMLElement | null | undefined, children: any): void;
 function $reference<T = HTMLElement>(): JSX.IReference<T>;
 function $event<T>(context?: any): IEvent<T>;
 
@@ -555,8 +709,8 @@ type IList<T> = (T[] | Iterable<T> | AsyncIterable<T> | (() => Promise<T[]>));
 type ListEventHandler<T> = (item: T, arg?: any) => void;
 type EventHandler<T> = (arg: T, context?: any) => void | Promise<void>;
 interface IEvent<T> {
-    add(handler: EventHandler<T>): void;
-    notify(arg: T, context?: any): void | Promise<void>;
+    add(handler: (arg: T, context?: any) => void | Promise<void>): void;
+    notify(arg: T, context?: any): Promise<void>;
 }
 interface IObservableList<T> {
     onItemAdded(callback: ListEventHandler<T>): void;
@@ -585,7 +739,7 @@ namespace JSX {
     type EventHandler<T extends Event> = (event: T) => void;
     type SvgImage = () => HTMLImageElement;
     interface IReference<T> {
-        setReference(reference: T): any;
+        setReference(reference: T): void;
         onLoad: IEvent<T>;
         readonly value?: T;
     }
@@ -593,47 +747,47 @@ namespace JSX {
         ref?: IReference<T>;
     }
     interface Component<T> extends Reference<T> {
-        'class'?: string;
-        'if'?: boolean;
-        'when'?: Promise<any> | IReference<any>;
-        'id'?: string;
+        class?: string;
+        if?: boolean;
+        when?: Promise<any> | IReference<any>;
+        id?: string;
     }
     interface BasicElement extends Component<HTMLElement> {
-        'title'?: string | undefined;
-        'style'?: string | undefined;
-        'draggable'?: boolean;
-        'ondragstart'?: EventHandler<DragEvent>;
-        'ondragenter'?: EventHandler<DragEvent>;
-        'ondragleave'?: EventHandler<DragEvent>;
-        'ondragover'?: EventHandler<DragEvent>;
-        'ondragend'?: EventHandler<DragEvent>;
-        'ondrop'?: EventHandler<DragEvent>;
-        'onclick'?: EventHandler<MouseEvent>;
+        title?: string;
+        style?: string;
+        draggable?: boolean;
+        onclick?: (event: MouseEvent) => void;
+        ondragstart?: (event: DragEvent) => void;
+        ondragenter?: (event: DragEvent) => void;
+        ondragleave?: (event: DragEvent) => void;
+        ondragover?: (event: DragEvent) => void;
+        ondragend?: (event: DragEvent) => void;
+        ondrop?: (event: DragEvent) => void;
     }
     interface ValueElement extends BasicElement {
-        autocomplete?: "off";
+        autocomplete?: 'off';
         type?: 'text' | 'password' | 'file' | 'radio' | 'checkbox' | 'date' | 'time' | 'number' | 'range' | 'color' | 'submit' | 'reset';
         value?: string;
         name?: string;
-        checked?: 'checked' | undefined;
+        checked?: boolean;
         multiple?: boolean;
         min?: number;
         max?: number;
         step?: number;
         maxlength?: number;
-        placeholder?: string | undefined;
-        oninput?: EventHandler<InputEvent>;
-        onchange?: EventHandler<InputEvent>;
-        onkeypress?: EventHandler<KeyboardEvent>;
-        onpaste?: EventHandler<KeyboardEvent>;
+        placeholder?: string;
+        oninput?: (event: InputEvent) => void;
+        onchange?: (event: InputEvent) => void;
+        onkeypress?: (event: KeyboardEvent) => void;
+        onpaste?: (event: ClipboardEvent) => void;
     }
     interface OptionElement extends ValueElement {
-        disabled?: 'disabled' | undefined;
-        selected?: 'selected' | undefined;
+        disabled?: boolean;
+        selected?: boolean;
     }
     interface ImageElement extends BasicElement {
-        alt: string;
-        src: string;
+        alt?: string;
+        src?: string;
     }
     interface ActionElement extends BasicElement {
         href?: string;
@@ -644,8 +798,8 @@ namespace JSX {
     }
     interface CanvasElement extends BasicElement {
         graph?: any;
-        width: number;
-        height: number;
+        width?: number;
+        height?: number;
     }
     interface IntrinsicElements {
         p: BasicElement;
@@ -662,6 +816,7 @@ namespace JSX {
         footer: BasicElement;
         article: BasicElement;
         section: BasicElement;
+        nav: BasicElement;
         a: ActionElement & Reference<HTMLAnchorElement>;
         button: ActionElement & Reference<HTMLButtonElement>;
         form: FormElement;
@@ -681,11 +836,11 @@ namespace JSX {
         select: ValueElement & Reference<HTMLSelectElement>;
         option: OptionElement;
         label: BasicElement & {
-            'for'?: string;
+            for?: string;
         };
         span: BasicElement;
         audio: Reference<HTMLAudioElement> & {
-            src: string;
+            src?: string;
             autoplay?: boolean;
             controls?: boolean;
         };
@@ -710,7 +865,6 @@ namespace JSX {
         li: BasicElement;
         i: BasicElement;
         canvas: CanvasElement & Reference<HTMLCanvasElement>;
-        nav: BasicElement;
     }
 }
 
@@ -789,6 +943,7 @@ class ObservableList<T> implements IObservableList<T> {
     [Symbol.iterator](): Generator<any, void, unknown>;
     onItemAdded(added: ListEventHandler<T>): void;
     onItemRemoved(removed: ListEventHandler<T>): void;
+    moveItem(fromIndex: number, toIndex: number): void;
     add(item: any, arg?: any): Promise<void>;
     remove(item: any): Promise<void>;
     clear(): Promise<void>;
