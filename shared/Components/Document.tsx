@@ -36,8 +36,8 @@ export function DocumentPanel(props: DocumentProps) {
                 }
             </div>
             <div class="actions">
-                {enablePrint && <button title="Print" onclick={printDocument}>Print</button>}
-                {enableDownload && <button title="Download" onclick={downloadDocument}>Download</button>}
+                {enablePrint && <button title="Print" onclick={printDocument}>🖨️ Print</button>}
+                {enableDownload && <button title="Download" onclick={downloadDocument}>📄 Download</button>}
                 {close && <button class="close" title="Close" onclick={close}>&#10005;</button>}
             </div>
         </div>

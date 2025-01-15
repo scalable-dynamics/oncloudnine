@@ -12,11 +12,12 @@ export function List(props: ListProps, children: [ListTemplate]) {
     items.onItemAdded(onItemAdded);
     items.onItemRemoved(onItemRemoved);
 
-    const className = (addedClass ? `list ${addedClass}` : 'list') + (itemsArray.length > 10 ? ' large' : '');
+    const className = (addedClass ? `list ${addedClass}` : 'list') + (itemsArray.length > 10 ? ' large' : itemsArray.length === 0 ? ' empty' : '');
 
     return (
         <div ref={list} class={className} {...rest}>
             {itemsArray.map(renderItem)}
+            <h6>Empty</h6>
         </div>
     );
 
@@ -25,6 +26,7 @@ export function List(props: ListProps, children: [ListTemplate]) {
         const child = renderItem(item);
         list.value.appendChild(child);
         list.value.classList.toggle('large', items.count > 10);
+        list.value.classList.toggle('empty', items.count === 0);
     }
 
     function onItemRemoved(item, index) {
@@ -32,6 +34,7 @@ export function List(props: ListProps, children: [ListTemplate]) {
         console.log('removing', index, list.value.children[index]);
         list.value.children[index].remove();
         list.value.classList.toggle('large', items.count > 10);
+        list.value.classList.toggle('empty', items.count === 0);
     }
 
     function renderItem(item) {

@@ -24,7 +24,7 @@ function $element(
     props: Record<string, any> = {},
     ...children: any[]
 ): HTMLElement | undefined {
-    if(!props)props = {};
+    if (!props) props = {};
     // 1. Conditional rendering: skip if `props.if === false`
     if (props.hasOwnProperty('if') && props.if !== true) {
         return undefined;
@@ -61,6 +61,7 @@ function $element(
         if (isReference(value)) {
             // property is a dynamic reference
             const hasAsyncChild = children && typeof children[0] === 'function';
+            const asyncChild = hasAsyncChild ? children[0] : undefined;
             asyncProps.push(
                 new Promise<[string, any]>((resolve) => {
                     let firstLoad = true;
@@ -76,8 +77,11 @@ function $element(
                             firstLoad = false;
                         } else if (hasAsyncChild) {
                             // For dynamic children, re-render on changes
+                            if (!asyncChild) {
+                                console.error('asyncChild is not defined', asyncChild, component, props, children);
+                            }
                             element.innerHTML = '';
-                            const dynamicChildren = children[0](resolvedValue);
+                            const dynamicChildren = asyncChild(resolvedValue);
                             $children(element, dynamicChildren);
                         }
                     });

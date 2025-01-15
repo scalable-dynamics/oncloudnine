@@ -64,6 +64,13 @@
     margin: 0 10px;
 }
 
+.toolbar>label>h5,
+.toolbar>.section>label>h5 {
+    width: auto !important;
+    overflow: hidden;
+    height: 1em;
+}
+
 .toolbar>label:not(.text, .speech, .input>.file, .range),
 .toolbar>.section>label:not(.text, .speech, .input>.file, .range),
 .toolbar button:not(.send) {

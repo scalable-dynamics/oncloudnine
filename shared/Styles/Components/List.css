@@ -2,55 +2,81 @@
     position: relative;
 }
 
-.list.files.large .folder>.remove,
-.list.files.large .file-icon>.remove,
-.sidebar .list.history .folder>.remove,
-.sidebar .list.history .file-icon>.remove {
+.list>*>* {
+    max-width: 100%;
+    max-height: 120px;
+    object-fit: contain;
+}
+
+.list .list-item {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    border-bottom: 1px solid var(--border-color);
+    cursor: pointer;
+    color: var(--font-color);
+}
+
+.list h6 {
+    display: none;
+}
+
+.list.empty h6 {
+    display: block;
+    padding: 10px;
+}
+
+.list.large .folder>.remove,
+.list.large .file-icon>.remove,
+.sidebar .list .folder>.remove,
+.sidebar .list .file-icon>.remove {
     width: 12px;
     height: 12px;
     line-height: 11px;
     font-size: xx-small;
 }
 
-.list.files.large .file-icon,
-.sidebar .list.history .file-icon {
+.list.large .file-icon,
+.sidebar .list .file-icon {
     width: 16px;
     height: 21px;
     margin: 6px 0;
     margin-right: 100px;
 }
 
-.list.files.large .file-icon::after,
-.sidebar .list.history .file-icon::after {
+.list.large .file-icon::after,
+.sidebar .list .file-icon::after {
     border-width: 2px;
 }
 
-.list.files.large .file-icon h5,
-.sidebar .list.history .file-icon h5 {
+.list.large .file-icon h5 {
     position: static;
     margin-left: 20px;
+    margin-right: 20px;
     margin-top: -6px;
     line-height: 1.5;
     font-size: small;
     padding-left: 6px;
-    max-width: 85px;
+    width: auto !important;
+    max-width: 85px !important;
     text-overflow: ellipsis;
 }
 
-.sidebar .list.history .file-icon {
+.sidebar .list .file-icon {
     white-space: nowrap;
-    margin-right: 150px;
+    margin-right: 200px;
 }
 
-.sidebar .list.history .file-icon h5 {
-    max-width: var(--sidebar-width);
-    width: var(--sidebar-width);
+.sidebar .list .file-icon h5 {
+    max-width: var(--sidebar-width) !important;
+    width: var(--sidebar-width) !important;
     text-align: left;
+    margin: 0;
 }
 
 @media (max-width: 768px) {
 
-    .sidebar .list.history .file-icon h5 {
+    .sidebar .list .file-icon h5 {
         max-width: calc(var(--sidebar-width) - 50px);
         width: calc(var(--sidebar-width) - 50px);
     }
