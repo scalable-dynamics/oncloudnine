@@ -1,5 +1,7 @@
-import { createApplication } from "./session/createApplication";
-import { getSessionToken } from "./session/getSessionToken";
+import { createApplication } from "./api/createApplication";
+import { describeImage } from "./api/describeImage";
+import { generateImage } from "./api/generateImage";
+import { getSessionToken } from "./api/getSessionToken";
 
 interface Env {
     ASSETS: Fetcher;
@@ -15,7 +17,11 @@ console.log('Handling:', request.url);
             return new Response('Bad Request', { status: 400 });
         } else if (url.pathname.startsWith('/api/getSessionToken')) {
             return await getSessionToken(request, env.KV);
-        } else if (url.pathname.startsWith('/api/create')) {
+        } else if (url.pathname.startsWith('/api/generateImage')) {
+            return await generateImage(request, env.KV);
+        } else if (url.pathname.startsWith('/api/describeImage')) {
+            return await describeImage(request, env.KV);
+        } else if (url.pathname.startsWith('/api/createApplication')) {
             return await createApplication(request, env.KV);
         } else if (url.pathname.startsWith('/function/') || url.pathname.startsWith('/functions/') || url.pathname.startsWith('/services/') || url.pathname.startsWith('/api/') || url.pathname.startsWith('/data/') || url.pathname.startsWith('.git')
         ) {

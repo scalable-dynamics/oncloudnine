@@ -8,10 +8,6 @@ export async function createApplication(req, KV: KVNamespace) {
         const model = await KV.get('OPENAI_MODEL');
         let { name, specs, html = '' } = await req.json();
         if (!name || !specs) {
-            // const formData = await req.formData();
-            // console.log(formData);
-            // name = formData.get('name');
-            // spec = formData.get('specs');
             return new Response("Error", { status: 400 });
         }
         const intent = `Create an responsive, mobile-friendly application (HTML,JavaScript,CSS,WEBGL,SVG,etc.) with the name "${name}" and specifications: ${specs}` + (html ? `\nExisting Content:\`\`\`html\n${html}\n\`\`\`` : '');
