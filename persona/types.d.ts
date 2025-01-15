@@ -148,24 +148,46 @@ class SpeechQueue {
 
 function uuid(): string;
 
-class OpenAIRealtimeVoiceChat {
-    onReady: any;
-    onUserSpeechStarted: any;
-    onUserSpeechStopped: any;
-    onAgentSpeechStarted: any;
-    onAgentSpeechStopped: any;
-    addMessage: any;
-    onFunctionCalled: any;
-    isUserSpeaking: any;
-    isAgentSpeaking: any;
-    constructor(onReady: any, onUserSpeechStarted: any, onUserSpeechStopped: any, onAgentSpeechStarted: any, onAgentSpeechStopped: any, addMessage: any, onFunctionCalled: any);
-    init(EPHEMERAL_KEY?: string): Promise<{
-        sendMessage: (message: any) => void;
-        stopSpeaking(): void;
-        mute(): void;
-        unMute(): void;
-        stop(): void;
-    } | undefined>;
+type VoiceChatEvent = "connected" | "speaking" | "busy" | "muted" | "message" | "function" | "disconnected";
+interface VoiceChatState {
+    connected: boolean;
+    speaking: boolean;
+    busy: boolean;
+    muted: boolean;
+    lastMessage: string;
+}
+interface VoiceChatMessage {
+    message: string;
+    from: string;
+    timestamp: number;
+}
+interface VoiceChatFunctionCall {
+    name: string;
+    args: any;
+}
+class VoiceChat {
+    userStateChanged: IEvent<Partial<VoiceChatState>>;
+    agentStateChanged: IEvent<Partial<VoiceChatState>>;
+    messageReceived: IEvent<VoiceChatMessage>;
+    functionCalled: IEvent<VoiceChatFunctionCall>;
+    constructor();
+    protected onConnected(): void;
+    protected onDisconnected(): void;
+    protected onUserStateChanged(state: Partial<VoiceChatState>): void;
+    protected onAgentStateChanged(state: Partial<VoiceChatState>): void;
+}
+class OpenAIVoiceChat extends VoiceChat {
+    private audioElement;
+    private peerConnection?;
+    private dataChannel?;
+    private mediaStream?;
+    constructor();
+    connect(args: any): Promise<void>;
+    updateVoice(voice: string): void;
+    sendMessage(message: string): void;
+    toggleMute(isMuted: any): void;
+    stopAudioPlayback(): void;
+    disconnect(): void;
 }
 
 {};
@@ -255,6 +277,16 @@ interface FileInputProps extends JSX.Component<HTMLElement> {
 function FileInput(props: FileInputProps): any;
 {};
 
+interface MediaInputProps extends JSX.Component<HTMLElement> {
+    input: IEvent<MediaInputToggle>;
+    type: MediaInputType;
+    interval?: number | undefined;
+    preview?: boolean | undefined;
+    position?: ScreenPosition;
+}
+function MediaInput(props: MediaInputProps): any;
+
+
 interface SpeechInputProps extends JSX.Component<HTMLElement> {
     speech: ISpeechInputManager;
     onSpeechInput: (text: string) => void;
@@ -308,8 +340,9 @@ interface ISpeechOutputManager {
     stopSpeaking(): any;
     init(): Promise<void>;
 }
+type MediaInputType = 'camera' | 'microphone' | 'screen';
 interface IMediaInput {
-    type: 'camera' | 'microphone' | 'screen';
+    type: MediaInputType;
     dataUrl: string;
     blob?: Blob;
 }
@@ -419,6 +452,68 @@ class ScreenInputManager implements IMediaInputManager {
     constructor(interval?: number | undefined, width?: number, height?: number);
     startRecording(): Promise<void>;
     stopRecording(): void;
+    capture(): Promise<IMediaInput | undefined>;
+}
+
+type ScreenPosition = 'top' | 'bottom' | 'left' | 'right' | 'center' | 'top-left' | 'top-center' | 'top-right' | 'bottom-left' | 'bottom-center' | 'bottom-right' | 'center-left' | 'center-right';
+abstract class MediaInputHandler {
+    private input;
+    get active(): boolean;
+    constructor(input: MediaInputToggle);
+    abstract onStart(): any;
+    abstract onStop(): any;
+    abstract get preview(): HTMLElement;
+    start(): void;
+    stop(): void;
+    protected onInput(media: IMediaInput): void;
+    protected onChange(media: IMediaInput): void;
+}
+class MediaInputToggle {
+    active: boolean;
+    private startEvent;
+    private stopEvent;
+    private inputEvent;
+    private changeEvent;
+    constructor();
+    onStart(callback: () => void): void;
+    onStop(callback: () => void): void;
+    onInput(callback: (text: IMediaInput) => void): void;
+    onChange(callback: (text: IMediaInput) => void): void;
+    start(): void;
+    stop(): void;
+    input(text: IMediaInput): void;
+    change(text: IMediaInput): void;
+}
+class UserVideoInputHandler extends MediaInputHandler {
+    private mode;
+    private interval?;
+    private width;
+    private height;
+    stream: MediaStream | null;
+    video: HTMLVideoElement;
+    canvas: HTMLCanvasElement;
+    context: CanvasRenderingContext2D;
+    timer: number | undefined;
+    get preview(): HTMLVideoElement;
+    constructor(input: MediaInputToggle, mode: 'camera' | 'screen', interval?: number | undefined, width?: number, height?: number);
+    onStart(): Promise<void>;
+    onStop(): void;
+    capture(): Promise<IMediaInput | undefined>;
+}
+class UserAudioInputHandler extends MediaInputHandler {
+    private interval?;
+    private width;
+    private height;
+    stream: MediaStream | null;
+    recorder: MediaRecorder | null;
+    audioChunks: Blob[];
+    canvas: HTMLCanvasElement;
+    context: CanvasRenderingContext2D;
+    timer: number | undefined;
+    get preview(): HTMLCanvasElement;
+    constructor(input: MediaInputToggle, interval?: number | undefined, width?: number, height?: number);
+    onStart(): Promise<void>;
+    onStop(): void;
     capture(): Promise<IMediaInput | undefined>;
 }
 

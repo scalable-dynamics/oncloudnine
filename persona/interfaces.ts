@@ -30,4 +30,5 @@ interface PersonaSettings {
     speechEnabled: boolean;
     speechDetectionEnabled: boolean;
     speechDetectionThreshold: number;
+    memories?: string[];
 }
