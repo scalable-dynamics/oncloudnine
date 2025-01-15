@@ -32,8 +32,10 @@ interface ISpeechOutputManager {
     init(): Promise<void>;
 }
 
+type MediaInputType = 'camera' | 'microphone' | 'screen';
+
 interface IMediaInput {
-    type: 'camera' | 'microphone' | 'screen';
+    type: MediaInputType;
     dataUrl: string;
     blob?: Blob;
 }

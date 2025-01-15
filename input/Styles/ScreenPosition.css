@@ -1,0 +1,73 @@
+.screen-position {
+    position: fixed;
+    z-index: 200;
+
+    --top-offset: 60px;
+    --bottom-offset: 60px;
+}
+
+.screen-position.top {
+    top: var(--top-offset);
+}
+
+.screen-position.bottom {
+    bottom: var(--bottom-offset);
+}
+
+.screen-position.left {
+    left: 0;
+}
+
+.screen-position.right {
+    right: 0;
+}
+
+.screen-position.center {
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.screen-position.top-left {
+    top: var(--top-offset);
+    left: calc(50% - (var(--max-width) / 2));
+}
+
+.screen-position.top-center {
+    top: var(--top-offset);
+    left: 50%;
+    transform: translate(-50%, 0);
+}
+
+.screen-position.top-right {
+    top: var(--top-offset);
+    right: calc(50% - (var(--max-width) / 2));
+}
+
+.screen-position.bottom-left {
+    bottom: var(--bottom-offset);
+    left: calc(50% - (var(--max-width) / 2));
+}
+
+.screen-position.bottom-center {
+    bottom: var(--bottom-offset);
+    left: 50%;
+    transform: translate(-50%, 0);
+}
+
+.screen-position.bottom-right {
+    bottom: var(--bottom-offset);
+    right: calc(50% - (var(--max-width) / 2));
+}
+
+.screen-position.center-left {
+    top: 50%;
+    left: calc(50% - (var(--max-width) / 2));
+    transform: translate(0, -50%);
+}
+
+.screen-position.center-right {
+    top: 50%;
+    right: calc(50% - (var(--max-width) / 2));
+    transform: translate(0, -50%);
+}

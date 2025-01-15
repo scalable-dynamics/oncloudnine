@@ -63,7 +63,8 @@ export function InputView(vm: InputViewModel) {
 
             <TextInput
                 ref={input}
-                placeholder="Enter your message..."
+                placeholder="Type your message..."
+                max_size={10000}
                 onValueChanged={vm.onTextInput}
                 fileProcessor={vm.enableFileInput ? vm.fileProcessor : undefined}
                 onFilesAdded={vm.enableFileInput ? vm.addFiles : undefined}
