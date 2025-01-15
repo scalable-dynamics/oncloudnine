@@ -1,0 +1,56 @@
+.tray {
+    --bottom-offset: 72px;
+    --tray-width: 300px;
+    --tray-height: 300px;
+
+    position: fixed;
+    z-index: 204;
+    left: calc(50% + (var(--max-width) / 2) - var(--tray-width));
+    width: var(--tray-width);
+    height: var(--tray-height);
+    background-color: var(--background-color);
+    border: 1px solid var(--font-color);
+    border-radius: 5px;
+    transition: bottom 0.3s;
+    margin-top: 2px;
+    /* bottom: calc(var(--tray-height) * -1 + 30px + var(--bottom-offset)); */
+    bottom: calc(var(--tray-height) * -1 + var(--bottom-offset));
+}
+/* 
+.tray:not(:has(.toggle)) {
+    bottom: calc(var(--tray-height) * -1 + var(--bottom-offset));
+} */
+
+.tray.open {
+    bottom: var(--bottom-offset);
+}
+
+.tray h4{
+    padding: 10px;
+}
+
+.tray>*:not(.toggle,h4) {
+    min-height: 100%;
+}
+
+.tray>.toggle {
+    position: absolute;
+    z-index: 1;
+    top: 0;
+    right: 0;
+    width: 40px;
+    height: 30px;
+    margin: 0;
+}
+
+.tray>.toggle::after {
+    content: "X";
+    font-size: 20px;
+    color: var(--font-color);
+    text-align: center;
+    line-height: 1;
+}
+
+/* .tray.open>.toggle::after {
+    content: "X";
+} */

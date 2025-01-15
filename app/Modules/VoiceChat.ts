@@ -1,172 +1,221 @@
-export class OpenAIRealtimeVoiceChat {
-    //inputAudioBuffer: Int16Array<ArrayBuffer>;
-    onReady: any;
-    onUserSpeechStarted: any;
-    onUserSpeechStopped: any;
-    onAgentSpeechStarted: any;
-    onAgentSpeechStopped: any;
-    addMessage: any;
-    onFunctionCalled: any;
-    isUserSpeaking: any;
-    isAgentSpeaking: any;
+export type VoiceChatEvent = "connected" | "speaking" | "busy" | "muted" | "message" | "function" | "disconnected";
 
-    constructor(onReady, onUserSpeechStarted, onUserSpeechStopped, onAgentSpeechStarted, onAgentSpeechStopped, addMessage, onFunctionCalled) {
-        //this.inputAudioBuffer = new Int16Array(0);
-        this.onReady = onReady;
-        this.onUserSpeechStarted = onUserSpeechStarted;
-        this.onUserSpeechStopped = onUserSpeechStopped;
-        this.onAgentSpeechStarted = onAgentSpeechStarted;
-        this.onAgentSpeechStopped = onAgentSpeechStopped;
-        this.addMessage = addMessage;
-        this.onFunctionCalled = onFunctionCalled;
+export interface VoiceChatState {
+    connected: boolean;
+    speaking: boolean;
+    busy: boolean;
+    muted: boolean;
+    lastMessage: string;
+}
+
+export interface VoiceChatMessage {
+    message: string;
+    from: string;
+    timestamp: number;
+}
+
+export interface VoiceChatFunctionCall {
+    name: string;
+    args: any;
+}
+
+export class VoiceChat {
+
+    userStateChanged: IEvent<Partial<VoiceChatState>>;
+    agentStateChanged: IEvent<Partial<VoiceChatState>>;
+
+    messageReceived: IEvent<VoiceChatMessage>;
+    functionCalled: IEvent<VoiceChatFunctionCall>;
+
+    constructor() {
+        this.userStateChanged = $event();
+        this.agentStateChanged = $event();
+        this.messageReceived = $event();
+        this.functionCalled = $event();
     }
 
-    async init(EPHEMERAL_KEY?: string) {
-        if (!EPHEMERAL_KEY) {
-            const tokenResponse = await fetch("/api/getSessionToken");
-            EPHEMERAL_KEY = await tokenResponse.text();
-            if (!EPHEMERAL_KEY) {
-                console.error('Failed to get session token');
-                return;
-            }
-        }
+    protected onConnected() {
+        this.userStateChanged.notify({ connected: true });
+        this.agentStateChanged.notify({ connected: true });
+    }
 
-        const pc = new RTCPeerConnection();
+    protected onDisconnected() {
+        this.userStateChanged.notify({ connected: false });
+        this.agentStateChanged.notify({ connected: false });
+    }
 
-        const audioEl = document.createElement("audio");
-        audioEl.autoplay = true;
-        pc.ontrack = e => audioEl.srcObject = e.streams[0];
+    protected onUserStateChanged(state: Partial<VoiceChatState>) {
+        this.userStateChanged.notify(state);
+    }
 
-        const ms = await navigator.mediaDevices.getUserMedia({
-            audio: true
-        });
-        pc.addTrack(ms.getTracks()[0]);
+    protected onAgentStateChanged(state: Partial<VoiceChatState>) {
+        this.agentStateChanged.notify(state);
+    }
+}
 
-        function toggleMute(isMuted) {
-            ms.getAudioTracks().forEach(t => t.enabled = !isMuted);
-        }
+export class OpenAIVoiceChat extends VoiceChat {
 
-        function stopAudioPlayback() {
-            audioEl.srcObject = null;
-        }
+    private audioElement: HTMLAudioElement;
+    private peerConnection?: RTCPeerConnection;
+    private dataChannel?: RTCDataChannel;
+    private mediaStream?: MediaStream;
 
-        function sendMessage(message) {
-            const responseCreate = {
-                type: "response.create",
-                response: {
-                    modalities: ["text"],
-                    instructions: message
-                },
-            };
-            dc.send(JSON.stringify(responseCreate));
-        }
+    constructor() {
+        super();
 
-        function functionResponse(id, result) {
-            const responseCreate = {
-                type: "conversation.item.create",
-                item: {
-                    type: "function_call_output",
-                    call_id: id,
-                    output: JSON.stringify(result),
-                }
-            };
-            dc.send(JSON.stringify(responseCreate));
-        }
+        this.audioElement = document.createElement("audio");
+        this.audioElement.autoplay = true;
+    }
 
-        const dc = pc.createDataChannel("oai-events");
-        dc.addEventListener("message", (e) => {
+    async connect(args) {
+        this.peerConnection = new RTCPeerConnection();
+        this.dataChannel = this.peerConnection.createDataChannel("oai-events");
+        this.dataChannel.addEventListener("message", (e) => {
             const realtimeEvent = JSON.parse(e.data);
-
             if (realtimeEvent.type === 'session.updated') {
-                if (this.onReady) this.onReady();
+
+                this.onConnected();
+
             } else if (realtimeEvent.type === 'input_audio_buffer.speech_started') {
-                this.isUserSpeaking = true;
-                if (this.onUserSpeechStarted) this.onUserSpeechStarted();
+
+                this.onUserStateChanged({ speaking: true });
+
             } else if (realtimeEvent.type === 'input_audio_buffer.speech_stopped') {
-                this.isUserSpeaking = false;
-                if (this.onUserSpeechStopped) this.onUserSpeechStopped();
+
+                this.onUserStateChanged({ speaking: false });
+
             } else if (realtimeEvent.type === 'response.audio_transcript.done') {
-                //console.log('response.audio_transcript.delta', realtimeEvent.delta);
-                if (this.onAgentSpeechStarted) this.onAgentSpeechStarted(realtimeEvent.transcript, true);
-                this.isAgentSpeaking = false;
+
+                this.onAgentStateChanged({ speaking: true, lastMessage: realtimeEvent.transcript });
+
             } else if (realtimeEvent.type === 'response.audio_transcript.delta') {
-                //console.log('response.audio_transcript.delta', realtimeEvent.delta);
-                //if (!this.isAgentSpeaking) {
-                if (this.onAgentSpeechStarted) this.onAgentSpeechStarted(realtimeEvent.delta);
-                //}
-                this.isAgentSpeaking = true;
+
+                this.onAgentStateChanged({ speaking: true, lastMessage: realtimeEvent.delta });
+
             } else if (realtimeEvent.type === 'response.function_call_arguments.done') {
 
-                console.log('response.function_call_arguments.done', realtimeEvent);
+                //console.log('response.function_call_arguments.done', realtimeEvent);
                 if (realtimeEvent.arguments && realtimeEvent.name) {
                     try {
                         const functionArgs = JSON.parse(realtimeEvent.arguments);
-                        console.log('function', realtimeEvent.name, functionArgs);
-                        if (this.onFunctionCalled) {
-                            this.onFunctionCalled(realtimeEvent.name, functionArgs).then(result => {
-                                functionResponse(realtimeEvent.call_id, result);
-                            });
-                        } else {
-                            functionResponse(realtimeEvent.call_id, { error: 'No function handler' });
-                        }
+                        //console.log('function', realtimeEvent.name, functionArgs);
+                        this.functionCalled.notify({ name: realtimeEvent.name, args: functionArgs }).then(result => {
+                            if (!this.dataChannel) return;
+                            const responseCreate = {
+                                type: "conversation.item.create",
+                                item: {
+                                    type: "function_call_output",
+                                    call_id: realtimeEvent.call_id,
+                                    output: JSON.stringify(result),
+                                }
+                            };
+                            this.dataChannel.send(JSON.stringify(responseCreate));
+                        });
                     } catch (e) {
                         console.error('Error parsing function arguments', e);
                     }
                 }
 
             } else if (realtimeEvent.type === 'response.done') {
-                //console.log('un-processed event', realtimeEvent);
-                if (this.onAgentSpeechStopped) this.onAgentSpeechStopped();
+
+                this.onAgentStateChanged({ speaking: false });
+
             } else if (realtimeEvent.type === 'response.text.done') {
-                if (this.addMessage) this.addMessage(realtimeEvent.text);
-                // } else if (realtimeEvent.type === 'conversation.item.input_audio_transcription.completed') {
-                //     console.log('conversation.item.input_audio_transcription.completed', realtimeEvent.transcript);
-                // } else if (realtimeEvent.type === 'response.audio.delta') {
-                //     const delta = new Int16Array(realtimeEvent.delta);
-                //     this.inputAudioBuffer = new Int16Array([...this.inputAudioBuffer, ...delta]);
-                //     console.log('response.audio.delta', this.inputAudioBuffer.length);
-                // } else if (realtimeEvent.type === 'response.audio.done') {
-                //     console.log('response.audio.done');
+
+                this.messageReceived.notify({ message: realtimeEvent.text, from: 'agent', timestamp: Date.now() });
+
             } else {
                 //console.log('un-processed event', realtimeEvent);
             }
-            //console.log('all events', realtimeEvent);
         });
 
-        const offer = await pc.createOffer();
-        await pc.setLocalDescription(offer);
+        const token = await getSessionToken(args);
+        if (!token) {
+            throw new Error('Failed to get session token');
+        }
 
+        this.peerConnection.ontrack = e => this.audioElement.srcObject = e.streams[0];
+
+        this.mediaStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        this.peerConnection.addTrack(this.mediaStream.getTracks()[0]);
+
+        const offer = await this.peerConnection.createOffer();
+        await this.peerConnection.setLocalDescription(offer);
         const baseUrl = "https://api.openai.com/v1/realtime";
         const model = "gpt-4o-realtime-preview-2024-12-17";
-        const sdpResponse = await fetch(`${baseUrl}?model=${model}`, {
+        const url = `${baseUrl}?model=${model}`;
+        const sdpResponse = await fetch(url, {
             method: "POST",
             body: offer.sdp,
             headers: {
-                Authorization: `Bearer ${EPHEMERAL_KEY}`,
+                Authorization: `Bearer ${token}`,
                 "Content-Type": "application/sdp"
             },
         });
 
-        await pc.setRemoteDescription({
+        await this.peerConnection.setRemoteDescription({
             type: "answer",
             sdp: await sdpResponse.text(),
         });
+    }
 
-        return {
-            sendMessage,
-            stopSpeaking() {
-                stopAudioPlayback();
-            },
-            mute() {
-                toggleMute(true);
-            },
-            unMute() {
-                toggleMute(false);
-            },
-            stop() {
-                pc.close();
-                ms.getTracks().forEach(t => t.stop());
+    updateVoice(voice: string) {
+        if (!this.dataChannel) return;
+        const sessionUpdate = {
+            type: "session.update",
+            session: {
+                voice
             }
         };
+        this.dataChannel.send(JSON.stringify(sessionUpdate));
     }
+
+    sendMessage(message: string) {
+        if (!this.dataChannel) return;
+        const responseCreate = {
+            type: "response.create",
+            response: {
+                modalities: ["text", "audio"],
+                instructions: message
+            },
+        };
+        this.dataChannel.send(JSON.stringify(responseCreate));
+    }
+
+    toggleMute(isMuted) {
+        if (!this.mediaStream) return;
+        this.mediaStream.getAudioTracks().forEach(t => t.enabled = !isMuted);
+        this.onUserStateChanged({ muted: isMuted, speaking: false });
+    }
+
+    stopAudioPlayback() {
+        this.audioElement.srcObject = null;
+        if (!this.mediaStream) return;
+        this.mediaStream.getTracks().forEach(t => t.stop());
+        this.onAgentStateChanged({ speaking: false });
+    }
+
+    disconnect() {
+        this.stopAudioPlayback();
+        if (this.peerConnection && this.peerConnection.connectionState === 'connected') {
+            this.peerConnection.close();
+        }
+        if (this.dataChannel && this.dataChannel.readyState === 'open') {
+            this.dataChannel.close();
+        }
+        this.peerConnection = undefined;
+        this.dataChannel = undefined;
+        this.onDisconnected();
+    }
+}
+
+async function getSessionToken(args) {
+    const tokenResponse = await fetch("/api/getSessionToken", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(args)
+    });
+    return await tokenResponse.text();
 }

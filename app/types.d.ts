@@ -83,6 +83,16 @@ interface FileInputProps extends JSX.Component<HTMLElement> {
 function FileInput(props: FileInputProps): any;
 {};
 
+interface MediaInputProps extends JSX.Component<HTMLElement> {
+    input: IEvent<MediaInputToggle>;
+    type: MediaInputType;
+    interval?: number | undefined;
+    preview?: boolean | undefined;
+    position?: ScreenPosition;
+}
+function MediaInput(props: MediaInputProps): any;
+
+
 interface SpeechInputProps extends JSX.Component<HTMLElement> {
     speech: ISpeechInputManager;
     onSpeechInput: (text: string) => void;
@@ -136,8 +146,9 @@ interface ISpeechOutputManager {
     stopSpeaking(): any;
     init(): Promise<void>;
 }
+type MediaInputType = 'camera' | 'microphone' | 'screen';
 interface IMediaInput {
-    type: 'camera' | 'microphone' | 'screen';
+    type: MediaInputType;
     dataUrl: string;
     blob?: Blob;
 }
@@ -250,6 +261,68 @@ class ScreenInputManager implements IMediaInputManager {
     capture(): Promise<IMediaInput | undefined>;
 }
 
+type ScreenPosition = 'top' | 'bottom' | 'left' | 'right' | 'center' | 'top-left' | 'top-center' | 'top-right' | 'bottom-left' | 'bottom-center' | 'bottom-right' | 'center-left' | 'center-right';
+abstract class MediaInputHandler {
+    private input;
+    get active(): boolean;
+    constructor(input: MediaInputToggle);
+    abstract onStart(): any;
+    abstract onStop(): any;
+    abstract get preview(): HTMLElement;
+    start(): void;
+    stop(): void;
+    protected onInput(media: IMediaInput): void;
+    protected onChange(media: IMediaInput): void;
+}
+class MediaInputToggle {
+    active: boolean;
+    private startEvent;
+    private stopEvent;
+    private inputEvent;
+    private changeEvent;
+    constructor();
+    onStart(callback: () => void): void;
+    onStop(callback: () => void): void;
+    onInput(callback: (text: IMediaInput) => void): void;
+    onChange(callback: (text: IMediaInput) => void): void;
+    start(): void;
+    stop(): void;
+    input(text: IMediaInput): void;
+    change(text: IMediaInput): void;
+}
+class UserVideoInputHandler extends MediaInputHandler {
+    private mode;
+    private interval?;
+    private width;
+    private height;
+    stream: MediaStream | null;
+    video: HTMLVideoElement;
+    canvas: HTMLCanvasElement;
+    context: CanvasRenderingContext2D;
+    timer: number | undefined;
+    get preview(): HTMLVideoElement;
+    constructor(input: MediaInputToggle, mode: 'camera' | 'screen', interval?: number | undefined, width?: number, height?: number);
+    onStart(): Promise<void>;
+    onStop(): void;
+    capture(): Promise<IMediaInput | undefined>;
+}
+class UserAudioInputHandler extends MediaInputHandler {
+    private interval?;
+    private width;
+    private height;
+    stream: MediaStream | null;
+    recorder: MediaRecorder | null;
+    audioChunks: Blob[];
+    canvas: HTMLCanvasElement;
+    context: CanvasRenderingContext2D;
+    timer: number | undefined;
+    get preview(): HTMLCanvasElement;
+    constructor(input: MediaInputToggle, interval?: number | undefined, width?: number, height?: number);
+    onStart(): Promise<void>;
+    onStop(): void;
+    capture(): Promise<IMediaInput | undefined>;
+}
+
 class UserMediaManager {
     mediaType: 'camera' | 'microphone' | 'screen';
     deviceId: string | undefined;
@@ -357,7 +430,74 @@ interface PersonaSettings {
     speechEnabled: boolean;
     speechDetectionEnabled: boolean;
     speechDetectionThreshold: number;
+    memories?: string[];
 }
+
+function getDefaultPersonas(): ({
+    name: string;
+    description: string;
+    avatar: number;
+    image: null;
+    voice: string;
+    showHair: boolean;
+    showNose: boolean;
+    showOutline: boolean;
+    welcome: string;
+    eyeColor: string;
+    eyeSpacing: number;
+    eyeWidth: number;
+    eyeBrowColor: string;
+    eyeBrowSize: number;
+    eyeLidColor: string;
+    eyeOutlineColor: string;
+    mouthSize: number;
+    mouthWidth: number;
+    mouthHeight: number;
+    noseSize: number;
+    noseWidth: number;
+    noseHeight: number;
+    lipColor: string;
+    lipSize: number;
+    skinHue: number;
+    skinBrightness: number;
+    skinGrayScale: number;
+    knowledge: string;
+    speechEnabled: boolean;
+    speechDetectionEnabled: boolean;
+    speechDetectionThreshold: number;
+} | {
+    name: string;
+    description: string;
+    avatar: number;
+    voice: string;
+    showHair: boolean;
+    showNose: boolean;
+    showOutline: boolean;
+    welcome: string;
+    eyeColor: string;
+    eyeSpacing: number;
+    eyeWidth: number;
+    eyeBrowColor: string;
+    eyeBrowSize: number;
+    eyeLidColor: string;
+    eyeOutlineColor: string;
+    mouthSize: number;
+    mouthWidth: number;
+    mouthHeight: number;
+    noseSize: number;
+    noseWidth: number;
+    noseHeight: number;
+    lipColor: string;
+    lipSize: number;
+    skinHue: number;
+    skinBrightness: number;
+    skinGrayScale: number;
+    knowledge: string;
+    speechEnabled: boolean;
+    speechDetectionEnabled: boolean;
+    speechDetectionThreshold: number;
+    image?: undefined;
+})[];
 
 class FaceAnimation extends ECS {
     blinkSystem: BlinkSystem;
@@ -415,8 +555,9 @@ class MouthSystem implements System {
 }
 
 function applyDefaultSettings(settings?: Partial<PersonaSettings>): any;
+
 interface PersonaViewProps {
-    settings: PersonaSettings;
+    settings: JSX.IReference<PersonaSettings>;
     startSpeaking: IEvent<string>;
     stopSpeaking: IEvent<void>;
     onClick?: () => void;
@@ -487,8 +628,6 @@ interface IconButtonProps {
 function IconButton(props: IconButtonProps): any;
 {};
 
-function ShowLightbox(title: any, element: any, onClose?: () => void | undefined): () => void;
-
 interface ListProps extends JSX.Component<any> {
     items: IObservableList<any>;
 }
@@ -520,6 +659,8 @@ interface MenuProps {
 }
 function Menu(props: MenuProps, children: any): any;
 {};
+
+function ShowModalDialog(title: any, element: any, onClose?: () => void | undefined): () => void;
 
 interface TableProps {
     columns?: string[];
@@ -639,11 +780,10 @@ interface ConversationSettings {
     onSelectFile?: (file: IConversationFile) => void;
 }
 
-function isElementReference(arg: any): arg is JSX.IReference<HTMLElement>;
 function isReference<T>(arg: any): arg is JSX.IReference<T>;
-function $element(component: any, props?: {}, ...children: any): HTMLElement | undefined;
-function resolveChildren(children: any, ...args: any[]): any;
-function $children(element: any, children: any): void;
+function isElementReference(arg: any): arg is JSX.IReference<HTMLElement>;
+function $element(component: string | Function, props?: Record<string, any>, ...children: any[]): HTMLElement | undefined;
+function $children(parent: HTMLElement | null | undefined, children: any): void;
 function $reference<T = HTMLElement>(): JSX.IReference<T>;
 function $event<T>(context?: any): IEvent<T>;
 
@@ -651,8 +791,8 @@ type IList<T> = (T[] | Iterable<T> | AsyncIterable<T> | (() => Promise<T[]>));
 type ListEventHandler<T> = (item: T, arg?: any) => void;
 type EventHandler<T> = (arg: T, context?: any) => void | Promise<void>;
 interface IEvent<T> {
-    add(handler: EventHandler<T>): void;
-    notify(arg: T, context?: any): void | Promise<void>;
+    add(handler: (arg: T, context?: any) => void | Promise<void>): void;
+    notify(arg: T, context?: any): Promise<void>;
 }
 interface IObservableList<T> {
     onItemAdded(callback: ListEventHandler<T>): void;
@@ -681,7 +821,7 @@ namespace JSX {
     type EventHandler<T extends Event> = (event: T) => void;
     type SvgImage = () => HTMLImageElement;
     interface IReference<T> {
-        setReference(reference: T): any;
+        setReference(reference: T): void;
         onLoad: IEvent<T>;
         readonly value?: T;
     }
@@ -689,47 +829,47 @@ namespace JSX {
         ref?: IReference<T>;
     }
     interface Component<T> extends Reference<T> {
-        'class'?: string;
-        'if'?: boolean;
-        'when'?: Promise<any> | IReference<any>;
-        'id'?: string;
+        class?: string;
+        if?: boolean;
+        when?: Promise<any> | IReference<any>;
+        id?: string;
     }
     interface BasicElement extends Component<HTMLElement> {
-        'title'?: string | undefined;
-        'style'?: string | undefined;
-        'draggable'?: boolean;
-        'ondragstart'?: EventHandler<DragEvent>;
-        'ondragenter'?: EventHandler<DragEvent>;
-        'ondragleave'?: EventHandler<DragEvent>;
-        'ondragover'?: EventHandler<DragEvent>;
-        'ondragend'?: EventHandler<DragEvent>;
-        'ondrop'?: EventHandler<DragEvent>;
-        'onclick'?: EventHandler<MouseEvent>;
+        title?: string;
+        style?: string;
+        draggable?: boolean;
+        onclick?: (event: MouseEvent) => void;
+        ondragstart?: (event: DragEvent) => void;
+        ondragenter?: (event: DragEvent) => void;
+        ondragleave?: (event: DragEvent) => void;
+        ondragover?: (event: DragEvent) => void;
+        ondragend?: (event: DragEvent) => void;
+        ondrop?: (event: DragEvent) => void;
     }
     interface ValueElement extends BasicElement {
-        autocomplete?: "off";
+        autocomplete?: 'off';
         type?: 'text' | 'password' | 'file' | 'radio' | 'checkbox' | 'date' | 'time' | 'number' | 'range' | 'color' | 'submit' | 'reset';
         value?: string;
         name?: string;
-        checked?: 'checked' | undefined;
+        checked?: boolean;
         multiple?: boolean;
         min?: number;
         max?: number;
         step?: number;
         maxlength?: number;
-        placeholder?: string | undefined;
-        oninput?: EventHandler<InputEvent>;
-        onchange?: EventHandler<InputEvent>;
-        onkeypress?: EventHandler<KeyboardEvent>;
-        onpaste?: EventHandler<KeyboardEvent>;
+        placeholder?: string;
+        oninput?: (event: InputEvent) => void;
+        onchange?: (event: InputEvent) => void;
+        onkeypress?: (event: KeyboardEvent) => void;
+        onpaste?: (event: ClipboardEvent) => void;
     }
     interface OptionElement extends ValueElement {
-        disabled?: 'disabled' | undefined;
-        selected?: 'selected' | undefined;
+        disabled?: boolean;
+        selected?: boolean;
     }
     interface ImageElement extends BasicElement {
-        alt: string;
-        src: string;
+        alt?: string;
+        src?: string;
     }
     interface ActionElement extends BasicElement {
         href?: string;
@@ -740,8 +880,8 @@ namespace JSX {
     }
     interface CanvasElement extends BasicElement {
         graph?: any;
-        width: number;
-        height: number;
+        width?: number;
+        height?: number;
     }
     interface IntrinsicElements {
         p: BasicElement;
@@ -758,6 +898,7 @@ namespace JSX {
         footer: BasicElement;
         article: BasicElement;
         section: BasicElement;
+        nav: BasicElement;
         a: ActionElement & Reference<HTMLAnchorElement>;
         button: ActionElement & Reference<HTMLButtonElement>;
         form: FormElement;
@@ -777,11 +918,11 @@ namespace JSX {
         select: ValueElement & Reference<HTMLSelectElement>;
         option: OptionElement;
         label: BasicElement & {
-            'for'?: string;
+            for?: string;
         };
         span: BasicElement;
         audio: Reference<HTMLAudioElement> & {
-            src: string;
+            src?: string;
             autoplay?: boolean;
             controls?: boolean;
         };
@@ -806,7 +947,6 @@ namespace JSX {
         li: BasicElement;
         i: BasicElement;
         canvas: CanvasElement & Reference<HTMLCanvasElement>;
-        nav: BasicElement;
     }
 }
 
@@ -885,6 +1025,7 @@ class ObservableList<T> implements IObservableList<T> {
     [Symbol.iterator](): Generator<any, void, unknown>;
     onItemAdded(added: ListEventHandler<T>): void;
     onItemRemoved(removed: ListEventHandler<T>): void;
+    moveItem(fromIndex: number, toIndex: number): void;
     add(item: any, arg?: any): Promise<void>;
     remove(item: any): Promise<void>;
     clear(): Promise<void>;

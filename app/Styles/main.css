@@ -1,64 +1,58 @@
-.main {}
-
-.main .content {
+.main{
     width: var(--max-width);
     margin: 0 auto;
-    display: flex;
-    flex-flow: column;
-    padding-top: 300px;
+    min-height: 100vh;
+}
+
+.main .header>h1 {
+    text-align: center;
+}
+
+.main .document {
+    width: 90%;
+    margin: 0 auto;
+}
+
+.main .document>.content {
+    margin-top: 60px;
+}
+
+.main .document.application iframe {
+    overflow: visible;
+    width: calc(var(--max-width) * .68) !important;
 }
 
 .connecting::after {
     content: 'Connecting...';
     position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 250px;
+    height: 100px;
+    line-height: 100px;
     background-color: var(--background-color);
+    border-radius: 10px;
+    border: solid 1px var(--font-color);
     color: var(--font-color);
     font-size: 2em;
-    display: flex;
-    justify-content: center;
-    align-items: center;
     z-index: 1000;
 }
 
 .assistant {
-    display: flex;
-    flex-flow: row;
-    flex-wrap: wrap;
-    justify-content: center;
-    align-items: center;
-    padding: 10px 20px;
-    background-color: var(--background-color);
     z-index: 100;
     --scale-factor: .8;
 }
 
+.assistant.screen-position {
+    --scale-factor: .5;
+}
+
+.assistant.pinned,
 .assistant.scrolled,
-.assistant.pinned {
-    position: fixed;
-    top: 60px;
-    width: var(--max-width);
-    margin: 0 auto;
+.assistant.tapped {
     --scale-factor: .25;
-    justify-content: space-between;
-}
-
-.assistant .input {
-    margin: 0 auto;
-}
-
-.preview {
-    position: fixed;
-    inset: 0;
-    top: 250px;
-}
-
-iframe {
-    width: 100%;
-    height: 100%;
+    left: calc(50% - var(--max-width) / 2 + 100px);
 }
 
 .loading::after {
@@ -75,18 +69,30 @@ iframe {
     background-color: var(--background-color);
     color: var(--font-color);
     font-size: 2em;
-    display: flex;
-    justify-content: center;
-    align-items: center;
     z-index: 1000;
 }
 
+.conversation .application {
+    background-color: var(--font-color);
+}
+
+.conversation .application .actions button {
+    color: var(--background-color) !important;
+}
+
 .conversation {
-    min-height: 100vh;
-    margin-bottom: -50vh;
-    align-items: center;
     display: flex;
-    flex-flow: column;
+    flex-direction: column;
+    gap: 10px;
+    width: 80%;
+    margin: 0 auto;
+    /* min-height: 100vh; */
+    padding-top: 120px;
+    overflow: visible;
+}
+
+.conversation>*:last-child {
+    margin-bottom: 50vh;
 }
 
 .conversation .message {
@@ -95,7 +101,6 @@ iframe {
     border-radius: 20px;
     position: relative;
     color: var(--font-color);
-    max-width: 80%;
     word-wrap: break-word;
     box-shadow: 0 0 10px 0 #333;
 }
@@ -175,20 +180,33 @@ iframe {
 
 @media (max-width: 768px) {
 
+    .main .document {
+        width: 100%;
+    }
+    
     .assistant {
         --scale-factor: .5;
     }
 
-    .preview{
-        top: 310px;
-    }
-
-    .conversation .message {
-        max-width: 100%;
+    .conversation {
+        width: 100%;
     }
 }
 
 @media print {
+
+    .main .document {
+        width: 100%;
+        box-shadow: none;
+        border: none;
+    }
+
+    .tooltip,
+    .tray,
+    .sidebar {
+        display: none;
+    }
+
     .assistant {
         display: none;
     }
