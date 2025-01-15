@@ -6,7 +6,8 @@
     "scripts": {
         "build": "cd ./tools && tsc",
         "start": "node ./build.js --main renderWorkspaceView --apps input,persona,app --services server",
-        "deploy": "build % npx wrangler pages deploy ./public"
+        "publish": "node ./build.js --main renderWorkspaceView --apps input,persona,app --services server --release",
+        "deploy": "cd ./build && npx wrangler pages deploy ./public"
     },
     "devDependencies": {
         "@cloudflare/workers-types": "^4.20240620.0",
